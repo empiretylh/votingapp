@@ -2,7 +2,9 @@
 import React from 'react';
 import {View, Text} from 'react-native';
 import Home from './screens/home';
-
+import King from './screens/King';
+import Queen from './screens/Queen';
+import Profile from './screens/Profile';
 const Container = () => {
   return (
     <View>
@@ -14,4 +16,4 @@ const Container = () => {
   );
 };
 
-export default Home;
+export default Profile;
