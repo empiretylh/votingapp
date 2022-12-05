@@ -14,6 +14,7 @@ import {
   TextInput,
   FlatList,
   ScrollView,
+  Linking,
 } from 'react-native';
 import {IMAGE} from '../Data/data';
 
@@ -22,13 +23,22 @@ import PersonItem from './components/personItem';
 const Home = () => {
   const array = Array.from({length: 10}, (_, i) => i + 1);
 
+  const OpenFacebook = () => {
+    Linking.openURL(
+      'fb://profile/thuralinhtut.developer/',
+    );
+  };
+
+  const OpenInstagram = () => {
+    Linking.openURL('instagram://user?username=thuralinhtut__');
+  };
+
   return (
     <ImageBackground source={IMAGE.girlbg} style={{flex: 1}}>
       <View style={styles.topView}>
         <View
           style={{
             flexDirection: 'row',
-
             alignItems: 'center',
           }}>
           <Image
@@ -59,13 +69,15 @@ const Home = () => {
               1CST_T001
             </Text>
             <View style={{flexDirection: 'row', marginTop: 5}}>
-              <TouchableOpacity style={{}}>
+              <TouchableOpacity onPress={() => OpenFacebook()}>
                 <Image
                   source={IMAGE.fbicon}
                   style={{width: 28, height: 28, borderRadius: 28}}
                 />
               </TouchableOpacity>
-              <TouchableOpacity style={{marginLeft: 5}}>
+              <TouchableOpacity
+                style={{marginLeft: 5}}
+                onPress={() => OpenInstagram()}>
                 <Image
                   source={IMAGE.igicon}
                   style={{width: 28, height: 28, borderRadius: 28}}
@@ -76,7 +88,7 @@ const Home = () => {
         </View>
       </View>
       <View>
-        <FlatList/>
+        <FlatList />
       </View>
       <View style={{padding: 8, marginTop: 0}}>
         <TouchableOpacity
@@ -86,25 +98,31 @@ const Home = () => {
             borderRadius: 15,
             alignItems: 'center',
             justifyContent: 'center',
-            flexDirection:'row',
+            flexDirection: 'row',
           }}>
-          <Image source={IMAGE.hearticon} style={{width:30,height:30, marginRight:8}}/>
+          <Image
+            source={IMAGE.hearticon}
+            style={{width: 30, height: 30, marginRight: 8}}
+          />
           <Text
             style={{color: 'white', fontFamily: 'Roboto-Bold', fontSize: 30}}>
             VOTE
           </Text>
         </TouchableOpacity>
-         <TouchableOpacity
+        <TouchableOpacity
           style={{
             backgroundColor: '#FFBF5F',
             padding: 10,
             borderRadius: 15,
             alignItems: 'center',
             justifyContent: 'center',
-            flexDirection:'row',
-            marginTop:10,
+            flexDirection: 'row',
+            marginTop: 10,
           }}>
-          <Image source={IMAGE.hearticon} style={{width:30,height:30, marginRight:8}}/>
+          <Image
+            source={IMAGE.hearticon}
+            style={{width: 30, height: 30, marginRight: 8}}
+          />
           <Text
             style={{color: 'white', fontFamily: 'Roboto-Bold', fontSize: 30}}>
             Back
