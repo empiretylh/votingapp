@@ -44,7 +44,7 @@ const Home = () => {
       
         <ScrollView style={{marginTop: 5}}>
           {array.map((item, index) => (
-            <PersonItem />
+            <PersonItem key={index}/>
           ))}
         </ScrollView>
       </View>

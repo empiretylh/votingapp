@@ -80,7 +80,7 @@ const Home = () => {
 
         <ScrollView style={{marginTop: 10}}>
           {array.map((item, index) => (
-            <PersonItem />
+            <PersonItem key={index}/>
           ))}
         </ScrollView>
       </View>
