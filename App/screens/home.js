@@ -3,7 +3,7 @@
 /* eslint-disable keyword-spacing */
 /* eslint-disable prettier/prettier */
 import {useCardAnimation} from '@react-navigation/stack';
-import React from 'react';
+import React, {useContext, useMemo, useEffect} from 'react';
 import {
   View,
   Text,
@@ -12,14 +12,45 @@ import {
   Image,
   TouchableOpacity,
   TextInput,
+  ActivityIndicator,
   ScrollView,
 } from 'react-native';
 import {IMAGE} from '../Data/data';
 
 import PersonItem from './components/personItem';
+import database from '../Data/database';
+import {useQuery} from 'react-query';
 
-const Home = () => {
+import {CodeContext, NameIMEIContext} from '../context/context';
+
+const Home = ({navigation}) => {
   const array = Array.from({length: 20}, (_, i) => i + 1);
+
+  const {v_code, setVCode, RemoveCode} = useContext(CodeContext);
+  const {name_IMEI, setName_IMEI, setName_ID, Remove_NameID} =
+    useContext(NameIMEIContext);
+
+  const query = useQuery({
+    queryKey: ['checkcode', v_code],
+    queryFn: database.getVoting,
+  });
+
+  const data = useMemo(() => {
+    if (query.data) {
+      const sel_k = query.data.data.sel_king;
+      const sel_q = query.data.data.sel_queen;
+      const all = sel_k.concat(sel_q);
+      const sort = all.sort((a, b) => (a.name > b.name ? 1 : -1));
+
+      return sort;
+    }
+  }, [query.data]);
+
+  const openProfile = data => {
+    navigation.navigate('profile', {
+      data: data,
+    });
+  };
 
   return (
     <ImageBackground source={IMAGE.mainbg} style={{flex: 1}}>
@@ -31,7 +62,11 @@ const Home = () => {
             alignItems: 'center',
           }}>
           <Text style={styles.logotext}>UCSD VOTING</Text>
-          <TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => {
+              RemoveCode();
+              Remove_NameID();
+            }}>
             <Image
               source={IMAGE.icon_question}
               style={{width: 30, height: 30}}
@@ -56,7 +91,7 @@ const Home = () => {
           </Text>
         </View>
       </View>
-      <View style={{padding: 8, marginTop: 15}}>
+      <View style={{padding: 8, marginTop: 15, flex: 1}}>
         <View
           style={{
             flexDirection: 'row',
@@ -77,12 +112,14 @@ const Home = () => {
             <Image source={IMAGE.icon_search} style={{width: 25, height: 25}} />
           </TouchableOpacity>
         </View>
-
-        <ScrollView style={{marginTop: 10}}>
-          {array.map((item, index) => (
-            <PersonItem key={index}/>
-          ))}
-        </ScrollView>
+        {query.is_fetching ? (
+          <ActivityIndicator />
+        ) : (
+          <ScrollView style={{marginTop: 10}}>
+            {query.data &&
+              data.map((item, index) => <PersonItem key={index} data={item} OpenProfile={openProfile} />)}
+          </ScrollView>
+        )}
       </View>
     </ImageBackground>
   );

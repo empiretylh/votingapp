@@ -5,40 +5,51 @@ import React from 'react';
 import {View, Text, StyleSheet, Image, TouchableOpacity} from 'react-native';
 
 import {IMAGE as I} from '../../Data/data';
-
-const PersonItem = () => {
+import axios from 'axios';
+const PersonItem = ({data, OpenProfile}) => {
   return (
     <View style={styles.view}>
       <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-        <TouchableOpacity style={{flexDirection: 'row'}}>
+        <TouchableOpacity
+          style={{flexDirection: 'row'}}
+          onPress={() => {
+            OpenProfile(data);
+          }}>
           <Image
-            source={I.person1}
+            source={
+              data && data.profileimage
+                ? {uri: axios.defaults.baseURL + data.profileimage}
+                : I.person1
+            }
             style={{
               width: 70,
               height: 70,
               borderRadius: 70,
               borderColor: 'red',
-              borderWidth: 2,
+              borderWidth: 1,
             }}
           />
+          {/* <Text>{data && data.profileimage}</Text> */}
           <View style={{marginLeft: 8, marginTop: 2}}>
             <View style={{flexDirection: 'row'}}>
-              <Text style={styles.name}>Mg Thura Lin Htut</Text>
+              <Text style={styles.name}>{data && data.name}</Text>
               <Image
                 source={I.icon_tickmark}
                 style={{width: 20, height: 20, marginLeft: 5}}
               />
             </View>
-            <Text style={styles.text}>1CST</Text>
-            <TouchableOpacity>
-              <Text style={styles.text}>See His Photos ></Text>
+            <Text style={styles.text}>{data && data.year}</Text>
+            <TouchableOpacity onPress={() => OpenProfile(data)}>
+              <Text style={styles.text}>
+                See {data && data.is_male ? 'His' : 'Her'} Photos >
+              </Text>
             </TouchableOpacity>
           </View>
         </TouchableOpacity>
 
         <View>
           <Image
-            source={I.king_crown}
+            source={data && data.is_male ? I.king_crown : I.queen_crown}
             style={{
               width: 30,
               height: 30,
@@ -77,6 +88,8 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 15,
     marginTop: 8,
+    shadowColor: '#000',
+    elevation: 2,
   },
   name: {
     fontFamily: 'Roboto-Bold',

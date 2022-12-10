@@ -16,6 +16,9 @@ export const IMAGE  = {
     king_crown:require('../../assets/crown.png'),
     queen_crown:require('../../assets/queen_crown.png'),
 
+    main_icon: require('../../assets/positive-vote.png'),
+    sp_icon: require('../../assets/love.png'),
+
     person1:require('../../assets/queen.png'),
      person2:require('../../assets/king.jpeg'),
 
@@ -23,4 +26,8 @@ export const IMAGE  = {
      igicon:require('../../assets/instagram.png'),
 
      hearticon:require('../../assets/heart.png'),
+     scanicon:require('../../assets/scan.png'),
+     starticon:require('../../assets/shuttle.png'),
 }
+
+export const URL = 'http://192.168.43.247:8000';

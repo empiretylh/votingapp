@@ -40,11 +40,11 @@ const Home = () => {
         </View>
       
       </View>
-      <View style={{padding: 8, marginTop: 0}}>
+      <View style={{padding: 8,paddingTop:0, marginTop: 0,flex:1,}}>
       
         <ScrollView style={{marginTop: 5}}>
           {array.map((item, index) => (
-            <PersonItem />
+            <PersonItem key={index}/>
           ))}
         </ScrollView>
       </View>

@@ -19,18 +19,24 @@ import {
 import {IMAGE} from '../Data/data';
 
 import PersonItem from './components/personItem';
+import axios from 'axios';
 
-const Home = () => {
+const Home = ({navigation,route}) => {
   const array = Array.from({length: 10}, (_, i) => i + 1);
 
-  const OpenFacebook = () => {
+  const {data} = route.params;
+
+
+
+  const OpenFacebook = (link) => {
+    let user ='https://www.facebook.com/khin.c.tun.102';
     Linking.openURL(
-      'fb://profile/thuralinhtut.developer/',
+      `fb://facewebmodal/f?href={user}`
     );
   };
 
-  const OpenInstagram = () => {
-    Linking.openURL('instagram://user?username=thuralinhtut__');
+  const OpenInstagram = (username) => {
+    Linking.openURL('instagram://user?username='+username);
   };
 
   return (
@@ -42,7 +48,10 @@ const Home = () => {
             alignItems: 'center',
           }}>
           <Image
-            source={IMAGE.person1}
+            source={
+              data && data.profileimage
+                ? {uri: axios.defaults.baseURL + data.profileimage}
+                : IMAGE.person1}
             style={{
               width: 130,
               height: 130,
@@ -58,7 +67,7 @@ const Home = () => {
                 color: 'black',
                 fontSize: 25,
               }}>
-              Hein Min Myat
+              {data && data.name}
             </Text>
             <Text
               style={{
@@ -66,10 +75,10 @@ const Home = () => {
                 color: 'black',
                 fontSize: 20,
               }}>
-              1CST_T001
+              {data && data.year }
             </Text>
             <View style={{flexDirection: 'row', marginTop: 5}}>
-              <TouchableOpacity onPress={() => OpenFacebook()}>
+              <TouchableOpacity onPress={() => OpenFacebook(data.fblink)}>
                 <Image
                   source={IMAGE.fbicon}
                   style={{width: 28, height: 28, borderRadius: 28}}
@@ -77,7 +86,7 @@ const Home = () => {
               </TouchableOpacity>
               <TouchableOpacity
                 style={{marginLeft: 5}}
-                onPress={() => OpenInstagram()}>
+                onPress={() => OpenInstagram(data.iglink)}>
                 <Image
                   source={IMAGE.igicon}
                   style={{width: 28, height: 28, borderRadius: 28}}
