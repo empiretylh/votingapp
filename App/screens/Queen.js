@@ -3,7 +3,7 @@
 /* eslint-disable keyword-spacing */
 /* eslint-disable prettier/prettier */
 import {useCardAnimation} from '@react-navigation/stack';
-import React from 'react';
+import React,{useContext,useMemo} from 'react';
 import {
   View,
   Text,
@@ -11,6 +11,7 @@ import {
   StyleSheet,
   Image,
   TouchableOpacity,
+  ActivityIndicator,
   TextInput,
   ScrollView,
 } from 'react-native';
@@ -18,8 +19,40 @@ import {IMAGE} from '../Data/data';
 
 import PersonItem from './components/personItem';
 
-const Home = () => {
-  const array = Array.from({length: 10}, (_, i) => i + 1);
+import {LoadingContext, CodeContext} from '../context/context';
+import {useQuery} from 'react-query';
+import database from '../Data/database';
+
+
+const Home = ({navigation}) => {
+
+  const {showLoading, setShowLoading} = useContext(LoadingContext);
+  const {v_code, setVCode, RemoveCode} = useContext(CodeContext);
+
+  const queen_query = useQuery(['queen_query', v_code], database.getQueen);
+
+  const Refresh = () => {
+    queen_query.refetch();
+  };
+
+
+  const data = useMemo(() => {
+    if (queen_query.data) {
+     
+      const all = queen_query.data.data;
+      const sort = all.sort((a, b) => (a.name > b.name ? 1 : -1));
+
+      return sort;
+    }
+  }, [queen_query.data]);
+
+  const openProfile = data => {
+    navigation.navigate('profile', {
+      data: data,
+    });
+  };
+
+
 
   return (
     <ImageBackground source={IMAGE.girlbg} style={{flex: 1}}>
@@ -30,7 +63,7 @@ const Home = () => {
         
             alignItems: 'center',
           }}>
-           <TouchableOpacity>
+           <TouchableOpacity onPress={()=>Refresh()}>
             <Image
               source={IMAGE.queen_crown}
               style={{width: 50, height: 50}}
@@ -42,11 +75,18 @@ const Home = () => {
       </View>
       <View style={{padding: 8,paddingTop:0, marginTop: 0,flex:1,}}>
       
-        <ScrollView style={{marginTop: 5}}>
-          {array.map((item, index) => (
-            <PersonItem key={index}/>
-          ))}
-        </ScrollView>
+        {queen_query.isFetching ? (
+          <ActivityIndicator size={50} color={'white'} />
+        ) : (
+         <>
+           <ScrollView>
+            {queen_query.data && data.map((item, index) => <PersonItem key={index} data={item} OpenProfile={openProfile} />)
+             
+            }
+             </ScrollView>
+        </>
+          
+        )}
       </View>
     </ImageBackground>
   );

@@ -60,6 +60,7 @@ const Home = () => {
         device_id: device_id,
         name: yourname.id,
       });
+
       setShowLoading(false);
     },
     onMutate: () => {
@@ -104,7 +105,7 @@ const Home = () => {
           />
 
           <Text style={{fontFamily: 'Roboto-Regular', color: 'black'}}>
-            Your Device ID is {device_id}
+            Your Device ID is {device_id} {v_code}
           </Text>
           <TouchableOpacity
             style={{

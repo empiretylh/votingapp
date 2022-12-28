@@ -6,7 +6,7 @@ import {View, Text, StyleSheet, Image, TouchableOpacity} from 'react-native';
 
 import {IMAGE as I} from '../../Data/data';
 import axios from 'axios';
-const PersonItem = ({data, OpenProfile}) => {
+const PersonItem = ({data, OpenProfile, onVote, votedId,onUnVote}) => {
   return (
     <View style={styles.view}>
       <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
@@ -58,24 +58,59 @@ const PersonItem = ({data, OpenProfile}) => {
               top: 0,
             }}
           />
-          <TouchableOpacity
-            style={{
-              position: 'absolute',
-              bottom: 0,
-              right: 0,
-              padding: 10,
-              backgroundColor: '#FF5F5F',
-              borderRadius: 15,
-              width: 100,
-              height: 40,
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}>
-            <Text
-              style={{fontFamily: 'Roboto-Bold', color: 'white', fontSize: 15}}>
-              Vote
-            </Text>
-          </TouchableOpacity>
+          {!votedId ? (
+            <TouchableOpacity
+              style={{
+                position: 'absolute',
+                bottom: 0,
+                right: 0,
+                padding: 10,
+                backgroundColor: '#FF5F5F',
+                borderRadius: 15,
+                width: 100,
+                height: 40,
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+              onPress={() => onVote(data)}>
+              <Text
+                style={{
+                  fontFamily: 'Roboto-Bold',
+                  color: 'white',
+                  fontSize: 15,
+                }}>
+                Vote
+              </Text>
+            </TouchableOpacity>
+          ) : (
+            <>
+              {votedId === data.id && (
+                <TouchableOpacity
+                  style={{
+                    position: 'absolute',
+                    bottom: 0,
+                    right: 0,
+                    padding: 10,
+                    backgroundColor: '#FF5F5F',
+                    borderRadius: 15,
+                    width: 100,
+                    height: 40,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                  onPress={() => onUnVote(data)}>
+                  <Text
+                    style={{
+                      fontFamily: 'Roboto-Bold',
+                      color: 'white',
+                      fontSize: 15,
+                    }}>
+                    Un Vote
+                  </Text>
+                </TouchableOpacity>
+              )}
+            </>
+          )}
         </View>
       </View>
     </View>

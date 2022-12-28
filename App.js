@@ -31,4 +31,22 @@ import {
 import 'react-native-gesture-handler';
 import Container from './App/MainContainer';
 
-export default Container;
+import {
+  useQuery,
+  useMutation,
+  useQueryClient,
+  QueryClient,
+  QueryClientProvider,
+} from 'react-query';
+
+const queryClient = new QueryClient();
+
+const App = ()=>{
+  return (
+     <QueryClientProvider client={queryClient}>
+      <Container/>
+     </QueryClientProvider>
+    )
+}
+
+export default App;

@@ -28,6 +28,7 @@ export const IMAGE  = {
      hearticon:require('../../assets/heart.png'),
      scanicon:require('../../assets/scan.png'),
      starticon:require('../../assets/shuttle.png'),
+     backicon:require('../../assets/arrow.png'),
 }
 
 export const URL = 'http://192.168.43.247:8000';

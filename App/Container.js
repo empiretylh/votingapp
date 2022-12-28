@@ -75,7 +75,7 @@ const Container = () => {
                 {focused && <View style={{width:100,height:hoversize,backgroundColor:'blue',position:'absolute',top:topsize,opacity:0.5}}/>}
         
                 <Image source={I.sp_icon} style={{width: iconsize, height: iconsize}} />
-                <Text style={styles.text}>Sponsor</Text>
+                <Text style={styles.text}>Developer</Text>
               </View>
             ),
           }}/>

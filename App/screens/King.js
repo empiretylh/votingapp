@@ -3,7 +3,7 @@
 /* eslint-disable keyword-spacing */
 /* eslint-disable prettier/prettier */
 import {useCardAnimation} from '@react-navigation/stack';
-import React from 'react';
+import React, {useContext,useMemo} from 'react';
 import {
   View,
   Text,
@@ -12,14 +12,45 @@ import {
   Image,
   TouchableOpacity,
   TextInput,
+  ActivityIndicator,
   ScrollView,
 } from 'react-native';
 import {IMAGE} from '../Data/data';
 
 import PersonItem from './components/personItem';
+import {LoadingContext, CodeContext} from '../context/context';
+import {useQuery} from 'react-query';
+import database from '../Data/database';
 
-const Home = () => {
-  const array = Array.from({length: 10}, (_, i) => i + 1);
+const King = ({navigation}) => {
+ 
+
+  const {showLoading, setShowLoading} = useContext(LoadingContext);
+  const {v_code, setVCode, RemoveCode} = useContext(CodeContext);
+
+  const king_query = useQuery(['query', v_code], database.getKing);
+
+  const Refresh = () => {
+    king_query.refetch();
+  };
+
+
+  const data = useMemo(() => {
+    if (king_query.data) {
+     
+      const all = king_query.data.data;
+      const sort = all.sort((a, b) => (a.name > b.name ? 1 : -1));
+
+      return sort;
+    }
+  }, [king_query.data]);
+
+  const openProfile = data => {
+    navigation.navigate('profile', {
+      data: data,
+    });
+  };
+
 
   return (
     <ImageBackground source={IMAGE.boybg} style={{flex: 1}}>
@@ -27,26 +58,30 @@ const Home = () => {
         <View
           style={{
             flexDirection: 'row',
-        
+
             alignItems: 'center',
           }}>
-           <TouchableOpacity>
-            <Image
-              source={IMAGE.king_crown}
-              style={{width: 50, height: 50}}
-            />
+          <TouchableOpacity onPress={() => Refresh()}>
+            <Image source={IMAGE.king_crown} style={{width: 50, height: 50}} />
           </TouchableOpacity>
-          <Text style={{...styles.logotext,marginLeft:10}}>King Selection</Text>
+          <Text style={{...styles.logotext, marginLeft: 10}}>
+            King Selection
+          </Text>
         </View>
-      
       </View>
-      <View style={{padding: 8,paddingTop:0, marginTop: 0,flex:1}}>
-      
-        <ScrollView style={{marginTop: 5}}>
-          {array.map((item, index) => (
-            <PersonItem key={index}/>
-          ))}
-        </ScrollView>
+      <View style={{padding: 8, paddingTop: 0, marginTop: 0, flex: 1}}>
+        {king_query.isFetching ? (
+          <ActivityIndicator size={50} color={'white'} />
+        ) : (
+         <>
+           <ScrollView>
+            {king_query.data && data.map((item, index) => <PersonItem key={index} data={item} OpenProfile={openProfile} />)
+             
+            }
+             </ScrollView>
+        </>
+          
+        )}
       </View>
     </ImageBackground>
   );
@@ -81,4 +116,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Home;
+export default King;
