@@ -105,7 +105,7 @@ const PersonItem = ({data, OpenProfile, onVote, votedId,onUnVote}) => {
                       color: 'white',
                       fontSize: 15,
                     }}>
-                    Un Vote
+                    Un-Vote
                   </Text>
                 </TouchableOpacity>
               )}

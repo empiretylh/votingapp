@@ -3,7 +3,7 @@
 /* eslint-disable keyword-spacing */
 /* eslint-disable prettier/prettier */
 import {useCardAnimation} from '@react-navigation/stack';
-import React, {useContext,useMemo} from 'react';
+import React, {useContext, useMemo} from 'react';
 import {
   View,
   Text,
@@ -18,32 +18,74 @@ import {
 import {IMAGE} from '../Data/data';
 
 import PersonItem from './components/personItem';
-import {LoadingContext, CodeContext} from '../context/context';
+import {
+  LoadingContext,
+  CodeContext,
+  DataContext,
+  NameIMEIContext,
+} from '../context/context';
 import {useQuery} from 'react-query';
 import database from '../Data/database';
 
 const King = ({navigation}) => {
- 
+  const {
+    showLoading,
+    setShowLoading,
+    IsVote,
+    setIsVote,
+    VoteQueen,
+    VoteKing,
+    UVK,
+    UVQ,
+  } = useContext(LoadingContext);
 
-  const {showLoading, setShowLoading} = useContext(LoadingContext);
   const {v_code, setVCode, RemoveCode} = useContext(CodeContext);
 
-  const king_query = useQuery(['query', v_code], database.getKing);
+  // const king_query = useQuery(['query', v_code], database.getKing);
+  const {name_IMEI, setName_IMEI, setName_ID, Remove_NameID} =
+    useContext(NameIMEIContext);
+
+  const {votedking, votedqueen, query} = useContext(DataContext);
 
   const Refresh = () => {
-    king_query.refetch();
+    query.refetch();
   };
 
+   const KingVotedId = useMemo(() => {
+    if (votedking.data) {
+      return votedking.data.data !== 0 && votedking.data.data.selection;
+    }
+
+    return 0;
+  }, [votedking.data]);
 
   const data = useMemo(() => {
-    if (king_query.data) {
-     
-      const all = king_query.data.data;
-      const sort = all.sort((a, b) => (a.name > b.name ? 1 : -1));
+    if (query.data) {
+      const sel_k = query.data.data.sel_king;
+      if(KingVotedId){
+      for (var i = 0; i < sel_k.length; i++) {
+        sel_k[i] = {
+          ...sel_k[i],
+          ...{vote: sel_k[i].id === KingVotedId ? true : false},
+        };
+          console.log(sel_k[i].vote)
+      }
+
+      
+      }
+
+      const all = sel_k;
+
+      const sort = all.sort((a, b) => {
+        if (a.vote === b.vote) {
+          return 0;
+        }
+        return a.vote ? -1 : 1;
+      });
 
       return sort;
     }
-  }, [king_query.data]);
+  }, [query.data,KingVotedId]);
 
   const openProfile = data => {
     navigation.navigate('profile', {
@@ -51,6 +93,37 @@ const King = ({navigation}) => {
     });
   };
 
+  const Vote = data => {
+    if (data.is_male) {
+      VoteKing.mutate({
+        votingcode: v_code,
+        kingid: data.id,
+        deviceid: name_IMEI.device_id,
+      });
+    } else {
+      VoteQueen.mutate({
+        votingcode: v_code,
+        queenid: data.id,
+        deviceid: name_IMEI.device_id,
+      });
+    }
+  };
+
+  const UnVote = data => {
+    if (data.is_male) {
+      UVK.mutate({
+        votingcode: v_code,
+        deviceid: name_IMEI.device_id,
+      });
+    } else {
+      UVQ.mutate({
+        votingcode: v_code,
+        deviceid: name_IMEI.device_id,
+      });
+    }
+  };
+
+ 
 
   return (
     <ImageBackground source={IMAGE.boybg} style={{flex: 1}}>
@@ -70,17 +143,24 @@ const King = ({navigation}) => {
         </View>
       </View>
       <View style={{padding: 8, paddingTop: 0, marginTop: 0, flex: 1}}>
-        {king_query.isFetching ? (
+        {query.isFetching ? (
           <ActivityIndicator size={50} color={'white'} />
         ) : (
-         <>
-           <ScrollView>
-            {king_query.data && data.map((item, index) => <PersonItem key={index} data={item} OpenProfile={openProfile} />)
-             
-            }
-             </ScrollView>
-        </>
-          
+          <>
+            <ScrollView>
+              {query.data &&
+                data.map((item, index) => (
+                  <PersonItem
+                    key={index}
+                    data={item}
+                    OpenProfile={openProfile}
+                    onVote={Vote}
+                    onUnVote={UnVote}
+                    votedId={item.is_male ? KingVotedId : QueenVotedId}
+                  />
+                ))}
+            </ScrollView>
+          </>
         )}
       </View>
     </ImageBackground>

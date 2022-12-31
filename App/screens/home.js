@@ -23,7 +23,12 @@ import PersonItem from './components/personItem';
 import database from '../Data/database';
 import {useQuery, useMutation} from 'react-query';
 
-import {CodeContext, NameIMEIContext, LoadingContext,DataContext} from '../context/context';
+import {
+  CodeContext,
+  NameIMEIContext,
+  LoadingContext,
+  DataContext,
+} from '../context/context';
 
 const Home = ({navigation}) => {
   const array = Array.from({length: 20}, (_, i) => i + 1);
@@ -31,12 +36,20 @@ const Home = ({navigation}) => {
   const {v_code, setVCode, RemoveCode} = useContext(CodeContext);
   const {name_IMEI, setName_IMEI, setName_ID, Remove_NameID} =
     useContext(NameIMEIContext);
-  const {showLoading, setShowLoading,IsVote, setIsVote,VoteQueen,VoteKing,UVK,UVQ} = useContext(LoadingContext);
+  const {
+    showLoading,
+    setShowLoading,
+    IsVote,
+    setIsVote,
+    VoteQueen,
+    VoteKing,
+    UVK,
+    UVQ,
+  } = useContext(LoadingContext);
 
-  const {votedking,votedqueen} = useContext(DataContext);
+  const {votedking, votedqueen, query} = useContext(DataContext);
 
   // unVoteKing({queryKey
-
 
   const checkVotingCode = useQuery(['checkcode', v_code], database.checkCode, {
     onSuccess: e => {
@@ -47,21 +60,17 @@ const Home = ({navigation}) => {
     },
   });
 
-
-  useEffect(()=>{
-    console.log(JSON.stringify(VoteKing))
-  },[VoteKing])
-
- 
+  useEffect(() => {
+    console.log(JSON.stringify(VoteKing));
+  }, [VoteKing]);
 
   const Vote = data => {
     if (data.is_male) {
-
       VoteKing.mutate({
         votingcode: v_code,
         kingid: data.id,
         deviceid: name_IMEI.device_id,
-      })
+      });
     } else {
       VoteQueen.mutate({
         votingcode: v_code,
@@ -85,11 +94,6 @@ const Home = ({navigation}) => {
     }
   };
 
-  const query = useQuery({
-    queryKey: ['voting', v_code],
-    queryFn: database.getVoting,
-  });
-
   const KingVotedId = useMemo(() => {
     if (votedking.data) {
       return votedking.data.data !== 0 && votedking.data.data.selection;
@@ -112,31 +116,31 @@ const Home = ({navigation}) => {
 
       const sel_k = query.data.data.sel_king;
       const sel_q = query.data.data.sel_queen;
+    
+      for (var i = 0; i < sel_k.length; i++) {
+        sel_k[i] = {
+          ...sel_k[i],
+          ...{vote: sel_k[i].id === KingVotedId ? true : false},
+        };
+      }
+
+      for (var i = 0; i < sel_q.length; i++) {
+        sel_q[i] = {
+          ...sel_q[i],
+          ...{vote: sel_q[i].id === QueenVotedId ? true : false},
+        };
+      }
+
       const all = sel_k && sel_k.concat(sel_q);
+
       const sort = all.sort((a, b) => {
-        if (QueenVotedId && KingVotedId) {
-          if (a.id === QueenVotedId) {
-            console.log('Queen Same -1');
-            return 1;
-          } else if (b.id === QueenVotedId) {
-            console.log('Queen Same 1');
-            return -1;
-          } else if (a.id === KingVotedId) {
-            console.log('King Same -1');
-            return 1;
-          } else if (b.id === KingVotedId) {
-            console.log('King Same 1');
-            return 1;
-          } else {
-            return 0;
-          }
-        }
+        return b.vote ? 1 : -1;
         //
       });
 
       return sort;
     }
-  }, [query.data]);
+  }, [query.data, QueenVotedId, KingVotedId]);
 
   const openProfile = data => {
     navigation.navigate('profile', {
@@ -172,7 +176,7 @@ const Home = ({navigation}) => {
           </TouchableOpacity>
         </View>
         <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
-          <TouchableOpacity onPress={() => console.log(size)}>
+          <TouchableOpacity onPress={() => console.log('what')}>
             <Image
               source={IMAGE.ucsd}
               style={{
@@ -181,7 +185,7 @@ const Home = ({navigation}) => {
               }}
             />
           </TouchableOpacity>
-        
+
           <Text
             style={{
               fontFamily: 'Roboto-Bold',
@@ -208,6 +212,7 @@ const Home = ({navigation}) => {
           <TextInput
             style={styles.searchtextbar}
             placeholder="Search With Name"
+            placeholderTextColor="#4d4e4f"
           />
           <TouchableOpacity style={{marginRight: 10}} onPress={e => Refresh()}>
             <Image source={IMAGE.icon_search} style={{width: 25, height: 25}} />
@@ -231,7 +236,6 @@ const Home = ({navigation}) => {
           </ScrollView>
         )}
       </View>
-
     </ImageBackground>
   );
 };

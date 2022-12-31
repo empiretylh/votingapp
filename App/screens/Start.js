@@ -147,6 +147,7 @@ const Home = () => {
               fontSize: 20,
             }}
             placeholder={'Code - XXXXX'}
+              placeholderTextColor='#4d4e4f'
             keyboardType={'numeric'}
             maxLength={5}
             onChangeText={e => (code.current = e)}

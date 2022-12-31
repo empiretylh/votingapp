@@ -25,7 +25,12 @@ import {
   QueryClientProvider,
 } from 'react-query';
 
-import {LoadingContext, CodeContext, NameIMEIContext,DataContext} from './context/context';
+import {
+  LoadingContext,
+  CodeContext,
+  NameIMEIContext,
+  DataContext,
+} from './context/context';
 
 import database from './Data/database';
 import EncryptedStorage from 'react-native-encrypted-storage';
@@ -43,6 +48,11 @@ const MainContainer = () => {
   const [IsVote, setIsVote] = useState(false);
 
   let opacity = useRef(new Animated.Value(0)).current;
+
+  const query = useQuery({
+    queryKey: ['voting', v_code],
+    queryFn: database.getVoting,
+  });
 
   const animate = () => {
     console.log('Animating');
@@ -138,14 +148,13 @@ const MainContainer = () => {
   );
 
   const votedqueen = useQuery(
-    ['votedqueen', v_code, name_IMEI &&name_IMEI.device_id],
+    ['votedqueen', v_code, name_IMEI && name_IMEI.device_id],
     database.getVotedQueen,
   );
 
-
   const VoteKing = useMutation(database.voteKing, {
     onSuccess: e => {
-       votedking.refetch();
+      votedking.refetch();
       setShowLoading(false);
     },
     onMutate: e => {
@@ -171,8 +180,6 @@ const MainContainer = () => {
     },
   });
 
-
- 
   const UVK = useMutation(database.uvk, {
     onSuccess: e => {
       console.log('Unvote Successfully');
@@ -209,15 +216,17 @@ const MainContainer = () => {
       setIsVote,
       VoteQueen,
       VoteKing,
-      UVK,UVQ
+      UVK,
+
+      UVQ,
     }),
     [showLoading, setShowLoading],
   );
 
-
-  
-
-  const datavalue = useMemo(()=>({votedking,votedqueen}),[votedking,votedqueen])
+  const datavalue = useMemo(
+    () => ({votedking, votedqueen, query}),
+    [votedking, votedqueen, query],
+  );
 
   if (load) {
     return (
@@ -301,7 +310,7 @@ const MainContainer = () => {
           </LoadingContext.Provider>
         </CodeContext.Provider>
       </NameIMEIContext.Provider>
-      </DataContext.Provider>
+    </DataContext.Provider>
   );
 };
 

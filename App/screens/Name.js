@@ -101,6 +101,7 @@ const Home = () => {
               fontSize: 20,
             }}
             placeholder={'Set Your Name'}
+                 placeholderTextColor='#4d4e4f'
             onChangeText={e => (yourname.current = e)}
           />
 

@@ -3,7 +3,7 @@
 /* eslint-disable keyword-spacing */
 /* eslint-disable prettier/prettier */
 import {useCardAnimation} from '@react-navigation/stack';
-import React,{useMemo,useState,useContext} from 'react';
+import React, {useMemo, useState, useContext} from 'react';
 import {
   View,
   Text,
@@ -20,9 +20,14 @@ import {
 import {IMAGE} from '../Data/data';
 
 import PersonItem from './components/personItem';
-import axios from 'axios'
+import axios from 'axios';
 
-import {CodeContext, NameIMEIContext, LoadingContext,DataContext} from '../context/context';
+import {
+  CodeContext,
+  NameIMEIContext,
+  LoadingContext,
+  DataContext,
+} from '../context/context';
 const windowWidth = Dimensions.get('window').width;
 const Home = ({navigation, route}) => {
   const array = Array.from({length: 10}, (_, i) => i + 1);
@@ -38,29 +43,83 @@ const Home = ({navigation, route}) => {
     Linking.openURL('instagram://user?username=' + username);
   };
 
-
   const {v_code, setVCode, RemoveCode} = useContext(CodeContext);
   const {name_IMEI, setName_IMEI, setName_ID, Remove_NameID} =
     useContext(NameIMEIContext);
-  const {showLoading, setShowLoading,IsVote, setIsVote,VoteQueen,VoteKing,UVK,UVQ} = useContext(LoadingContext);
+  const {
+    showLoading,
+    setShowLoading,
+    IsVote,
+    setIsVote,
+    VoteQueen,
+    VoteKing,
+    UVK,
+    UVKSuccess,
+    UVQ,
+  } = useContext(LoadingContext);
 
-  const {votedking,votedqueen} = useContext(DataContext);
+  const {votedking, votedqueen} = useContext(DataContext);
 
+  const KingVotedId = useMemo(() => {
+    if (votedking.data) {
+      return votedking.data.data !== 0 && votedking.data.data.selection;
+    }
+
+    return 0;
+  }, [votedking.data]);
+
+  const QueenVotedId = useMemo(() => {
+    if (votedqueen.data) {
+      console.log(votedqueen.data.data);
+      return votedqueen.data.data !== 0 && votedqueen.data.data.selection;
+    }
+
+    return 0;
+  }, [votedqueen.data]);
+
+  const [showVote, setShowVote] = useState(false);
 
   const Vote = data => {
     if (data.is_male) {
-
-      VoteKing.mutate({
-        votingcode: v_code,
-        kingid: data.id,
-        deviceid: name_IMEI.device_id,
-      })
+      if (KingVotedId) {
+        UVK.mutate({
+          votingcode: v_code,
+          deviceid: name_IMEI.device_id,
+        });
+        setTimeout(() => {
+          VoteKing.mutate({
+            votingcode: v_code,
+            kingid: data.id,
+            deviceid: name_IMEI.device_id,
+          });
+        }, 1000);
+      } else {
+        VoteKing.mutate({
+          votingcode: v_code,
+          kingid: data.id,
+          deviceid: name_IMEI.device_id,
+        });
+      }
     } else {
-      VoteQueen.mutate({
-        votingcode: v_code,
-        queenid: data.id,
-        deviceid: name_IMEI.device_id,
-      });
+      if (QueenVotedId) {
+         UVQ.mutate({
+          votingcode: v_code,
+          deviceid: name_IMEI.device_id,
+        });
+        setTimeout(() => {
+          VoteQueen.mutate({
+            votingcode: v_code,
+            queenid: data.id,
+            deviceid: name_IMEI.device_id,
+          });
+        }, 1000);
+      }else{
+         VoteQueen.mutate({
+          votingcode: v_code,
+          queenid: data.id,
+          deviceid: name_IMEI.device_id,
+        });
+      }
     }
   };
 
@@ -190,25 +249,63 @@ const Home = ({navigation, route}) => {
       <View style={{padding: 8, marginTop: 0}}>
         <TouchableOpacity
           style={{
-            backgroundColor: '#FF5F5F',
+            backgroundColor: data.is_male
+              ? KingVotedId
+                ? KingVotedId === data.id
+                  ? 'red'
+                  : '#FF5F5F'
+                : '#FF5F5F'
+              : QueenVotedId
+              ? QueenVotedId === data.id
+                ? 'red'
+                : '#FF5F5F'
+              : '#FF5F5F',
             padding: 10,
             borderRadius: 15,
             alignItems: 'center',
             justifyContent: 'center',
             flexDirection: 'row',
-          }}  
-
-          onPress={()=>{
-            Vote(data);
           }}
-          >
+          onPress={() => {
+            if (data.is_male) {
+              if (KingVotedId && KingVotedId === data.id) {
+                UnVote(data);
+              } else {
+                if (KingVotedId) {
+                  setShowVote(true);
+                } else {
+                  Vote(data);
+                }
+              }
+            } else {
+              if (QueenVotedId && QueenVotedId === data.id) {
+                UnVote(data);
+              } else {
+                if (QueenVotedId) {
+                  setShowVote(true);
+                } else {
+                  Vote(data);
+                }
+              }
+            }
+          }}>
           <Image
             source={IMAGE.hearticon}
-            style={{width: 30, height: 30, marginRight: 8,tintColor:'white'}}
+            style={{width: 30, height: 30, marginRight: 8, tintColor: 'white'}}
           />
           <Text
             style={{color: 'white', fontFamily: 'Roboto-Bold', fontSize: 30}}>
-            VOTE
+            {data.is_male
+              ? KingVotedId
+                ? KingVotedId === data.id
+                  ? 'Cancel Vote'
+                  : 'Vote'
+                : 'Vote'
+              : QueenVotedId
+              ? QueenVotedId === data.id
+                ? 'Cancel Vote'
+                : 'Vote'
+              : 'Vote'}
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
@@ -232,6 +329,57 @@ const Home = ({navigation, route}) => {
           </Text>
         </TouchableOpacity>
       </View>
+      {showVote && (
+        <View
+          style={{
+            position: 'absolute',
+            flex: 1,
+            width: '100%',
+            height: '100%',
+
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}>
+          <View
+            style={{
+              padding: 15,
+              width: '90%',
+              backgroundColor: 'white',
+              borderRadius: 15,
+              shadowColor: 'black',
+
+              elevation: 5,
+            }}>
+            <Text style={{fontSize: 15, color: 'black'}}>
+              If you want to vote for {data.name}, the first person you voted
+              for will automatically no longer vote.
+            </Text>
+            <TouchableOpacity
+              style={{
+                backgroundColor: 'green',
+                padding: 10,
+                borderRadius: 15,
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexDirection: 'row',
+                marginTop: 10,
+              }}
+              onPress={() => {
+                setShowVote(false);
+                Vote(data);
+              }}>
+              <Text
+                style={{
+                  color: 'white',
+                  fontFamily: 'Roboto-Bold',
+                  fontSize: 20,
+                }}>
+                It' OK Vote Now.
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      )}
     </ImageBackground>
   );
 };
