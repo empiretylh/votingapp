@@ -1,12 +1,20 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable react-native/no-inline-styles */
-import React from 'react';
+import React,{useContext} from 'react';
 
 import {View, Text, StyleSheet, Image, TouchableOpacity} from 'react-native';
 
 import {IMAGE as I} from '../../Data/data';
 import axios from 'axios';
+
+import { EndTimeContext } from '../../context/context';
+
 const PersonItem = ({data, OpenProfile, onVote, votedId,onUnVote}) => {
+
+  const {isTimeUp,setIsTimeUp} = useContext(EndTimeContext);
+ 
+
+
   return (
     <View style={styles.view}>
       <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
@@ -58,7 +66,7 @@ const PersonItem = ({data, OpenProfile, onVote, votedId,onUnVote}) => {
               top: 0,
             }}
           />
-          {!votedId ? (
+          {!isTimeUp ? !votedId ? (
             <TouchableOpacity
               style={{
                 position: 'absolute',
@@ -110,7 +118,7 @@ const PersonItem = ({data, OpenProfile, onVote, votedId,onUnVote}) => {
                 </TouchableOpacity>
               )}
             </>
-          )}
+          ):null}
         </View>
       </View>
     </View>

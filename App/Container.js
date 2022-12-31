@@ -5,7 +5,7 @@ import Home from './screens/home';
 import King from './screens/King';
 import Queen from './screens/Queen';
 import Profile from './screens/Profile';
-import Sponsor from './screens/Sponsor';
+import Sponsor from './screens/Developer';
 
 import {NavigationContainer} from '@react-navigation/native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
@@ -19,8 +19,8 @@ console.log(URL)
 
 const Tab = createBottomTabNavigator();
 const iconsize = 38;
-const hoversize = 68
-const topsize = -2
+const hoversize = 65
+const topsize = -1;
 const Container = () => {
   return (
    
@@ -40,7 +40,7 @@ const Container = () => {
           component={Home}
           options={{
             tabBarIcon: ({focused}) => (
-              <View style={{alignItems: 'center'}}>
+              <View style={{alignItems: 'center',padding:0,margin:0}}>
                   {focused && <View style={{width:'100%',height:hoversize,backgroundColor:'blue',position:'absolute',top:topsize,opacity:0.5}}/>}
           
                 <Image source={I.main_icon} style={{width: iconsize, height: iconsize}} />
@@ -51,7 +51,7 @@ const Container = () => {
         />
         <Tab.Screen name="king" component={King} options={{
             tabBarIcon: ({focused}) => (
-              <View style={{alignItems: 'center'}}>
+              <View style={{alignItems: 'center',padding:0,margin:0}}>
                 {focused && <View style={{width:100,height:hoversize,backgroundColor:'blue',position:'absolute',top:topsize,opacity:0.5}}/>}
            <Image source={I.king_crown} style={{width: iconsize, height: iconsize}} />
                 <Text style={styles.text}>King</Text>
@@ -60,7 +60,7 @@ const Container = () => {
           }} />
         <Tab.Screen name="queen" component={Queen}  options={{
             tabBarIcon: ({focused}) => (
-              <View style={{alignItems: 'center'}}>
+              <View style={{alignItems: 'center',padding:0,margin:0}}>
             {focused && <View style={{width:100,height:hoversize,backgroundColor:'blue',position:'absolute',top:topsize,opacity:0.5}}/>}
           
                 <Image source={I.queen_crown} style={{width: iconsize, height: iconsize}} />
@@ -71,8 +71,8 @@ const Container = () => {
 
         <Tab.Screen name="sponsor" component={Sponsor}  options={{
             tabBarIcon: ({focused}) => (
-              <View style={{alignItems: 'center'}}>
-                {focused && <View style={{width:100,height:hoversize,backgroundColor:'blue',position:'absolute',top:topsize,opacity:0.5}}/>}
+              <View style={{alignItems: 'center',padding:0,margin:0}}>
+                {focused && <View style={{width:100,height:hoversize,backgroundColor:'blue',position:'absolute',top:topsize,opacity:0.5,}}/>}
         
                 <Image source={I.sp_icon} style={{width: iconsize, height: iconsize}} />
                 <Text style={styles.text}>Developer</Text>

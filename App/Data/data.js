@@ -7,7 +7,7 @@ export const IMAGE  = {
     girlbg:require('../../assets/girlbg.png'),
 
 
-    ucsd:require('../../assets/ucsd.png'),
+    ucsd:require('../../assets/ucsd2.png'),
 
     icon_question:require('../../assets/question.png'),
     icon_search:require('../../assets/search.png'),
@@ -29,6 +29,9 @@ export const IMAGE  = {
      scanicon:require('../../assets/scan.png'),
      starticon:require('../../assets/shuttle.png'),
      backicon:require('../../assets/arrow.png'),
+
+     thura:require('../../assets/i.png'),
 }
 
-export const URL = 'http://192.168.43.247:8000';
+export const URL = 'https://8000-empiretylh-voting-nk9gc2pbav5.ws-us80.gitpod.io';
+

@@ -26,6 +26,7 @@ import {
   CodeContext,
   NameIMEIContext,
   LoadingContext,
+  EndTimeContext,
   DataContext,
 } from '../context/context';
 const windowWidth = Dimensions.get('window').width;
@@ -42,6 +43,8 @@ const Home = ({navigation, route}) => {
   const OpenInstagram = username => {
     Linking.openURL('instagram://user?username=' + username);
   };
+
+  const {isTimeUp, setIsTimeUp} = useContext(EndTimeContext);
 
   const {v_code, setVCode, RemoveCode} = useContext(CodeContext);
   const {name_IMEI, setName_IMEI, setName_ID, Remove_NameID} =
@@ -102,7 +105,7 @@ const Home = ({navigation, route}) => {
       }
     } else {
       if (QueenVotedId) {
-         UVQ.mutate({
+        UVQ.mutate({
           votingcode: v_code,
           deviceid: name_IMEI.device_id,
         });
@@ -113,8 +116,8 @@ const Home = ({navigation, route}) => {
             deviceid: name_IMEI.device_id,
           });
         }, 1000);
-      }else{
-         VoteQueen.mutate({
+      } else {
+        VoteQueen.mutate({
           votingcode: v_code,
           queenid: data.id,
           deviceid: name_IMEI.device_id,
@@ -247,67 +250,74 @@ const Home = ({navigation, route}) => {
       />
 
       <View style={{padding: 8, marginTop: 0}}>
-        <TouchableOpacity
-          style={{
-            backgroundColor: data.is_male
-              ? KingVotedId
-                ? KingVotedId === data.id
+        {!isTimeUp ? (
+          <TouchableOpacity
+            style={{
+              backgroundColor: data.is_male
+                ? KingVotedId
+                  ? KingVotedId === data.id
+                    ? 'red'
+                    : '#FF5F5F'
+                  : '#FF5F5F'
+                : QueenVotedId
+                ? QueenVotedId === data.id
                   ? 'red'
                   : '#FF5F5F'
-                : '#FF5F5F'
-              : QueenVotedId
-              ? QueenVotedId === data.id
-                ? 'red'
-                : '#FF5F5F'
-              : '#FF5F5F',
-            padding: 10,
-            borderRadius: 15,
-            alignItems: 'center',
-            justifyContent: 'center',
-            flexDirection: 'row',
-          }}
-          onPress={() => {
-            if (data.is_male) {
-              if (KingVotedId && KingVotedId === data.id) {
-                UnVote(data);
-              } else {
-                if (KingVotedId) {
-                  setShowVote(true);
+                : '#FF5F5F',
+              padding: 10,
+              borderRadius: 15,
+              alignItems: 'center',
+              justifyContent: 'center',
+              flexDirection: 'row',
+            }}
+            onPress={() => {
+              if (data.is_male) {
+                if (KingVotedId && KingVotedId === data.id) {
+                  UnVote(data);
                 } else {
-                  Vote(data);
+                  if (KingVotedId) {
+                    setShowVote(true);
+                  } else {
+                    Vote(data);
+                  }
+                }
+              } else {
+                if (QueenVotedId && QueenVotedId === data.id) {
+                  UnVote(data);
+                } else {
+                  if (QueenVotedId) {
+                    setShowVote(true);
+                  } else {
+                    Vote(data);
+                  }
                 }
               }
-            } else {
-              if (QueenVotedId && QueenVotedId === data.id) {
-                UnVote(data);
-              } else {
-                if (QueenVotedId) {
-                  setShowVote(true);
-                } else {
-                  Vote(data);
-                }
-              }
-            }
-          }}>
-          <Image
-            source={IMAGE.hearticon}
-            style={{width: 30, height: 30, marginRight: 8, tintColor: 'white'}}
-          />
-          <Text
-            style={{color: 'white', fontFamily: 'Roboto-Bold', fontSize: 30}}>
-            {data.is_male
-              ? KingVotedId
-                ? KingVotedId === data.id
+            }}>
+            <Image
+              source={IMAGE.hearticon}
+              style={{
+                width: 30,
+                height: 30,
+                marginRight: 8,
+                tintColor: 'white',
+              }}
+            />
+            <Text
+              style={{color: 'white', fontFamily: 'Roboto-Bold', fontSize: 30}}>
+              {data.is_male
+                ? KingVotedId
+                  ? KingVotedId === data.id
+                    ? 'Cancel Vote'
+                    : 'Vote'
+                  : 'Vote'
+                : QueenVotedId
+                ? QueenVotedId === data.id
                   ? 'Cancel Vote'
                   : 'Vote'
-                : 'Vote'
-              : QueenVotedId
-              ? QueenVotedId === data.id
-                ? 'Cancel Vote'
-                : 'Vote'
-              : 'Vote'}
-          </Text>
-        </TouchableOpacity>
+                : 'Vote'}
+            </Text>
+          </TouchableOpacity>
+        ) : null}
         <TouchableOpacity
           style={{
             backgroundColor: '#FFBF5F',

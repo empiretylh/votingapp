@@ -14,6 +14,7 @@ import {
   ActivityIndicator,
   TextInput,
   ScrollView,
+  RefreshControl,
 } from 'react-native';
 import {IMAGE} from '../Data/data';
 
@@ -102,11 +103,13 @@ const Home = ({navigation}) => {
 
       const all = sel_q;
 
-      const sort = all.sort((a, b) => {return (b.vote ? 1 : -1)});
+      const sort = all.sort((a, b) => {
+        return b.vote ? 1 : -1;
+      });
 
       return sort;
     }
-  }, [query.data,QueenVotedId]);
+  }, [query.data, QueenVotedId]);
 
   const openProfile = data => {
     navigation.navigate('profile', {
@@ -136,7 +139,17 @@ const Home = ({navigation}) => {
           <ActivityIndicator size={50} color={'white'} />
         ) : (
           <>
-            <ScrollView>
+            <ScrollView
+              refreshControl={
+                <RefreshControl
+                  refreshing={
+                    query.isFetching ||
+                    votedking.isFetching ||
+                    votedqueen.isFetching
+                  }
+                  onRefresh={Refresh}
+                />
+              }>
               {query.data &&
                 data.map((item, index) => (
                   <PersonItem

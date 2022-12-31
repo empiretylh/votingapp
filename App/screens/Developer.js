@@ -22,33 +22,27 @@ const Home = () => {
   const array = Array.from({length: 10}, (_, i) => i + 1);
 
   return (
-    <ImageBackground source={IMAGE.boybg} style={{flex: 1}}>
-      <View style={styles.topView}>
-        <View
-          style={{
-            flexDirection: 'row',
-        
-            alignItems: 'center',
-          }}>
-           <TouchableOpacity>
-            <Image
-              source={IMAGE.king_crown}
-              style={{width: 50, height: 50}}
-            />
-          </TouchableOpacity>
-          <Text style={{...styles.logotext,marginLeft:10}}>King Selection</Text>
-        </View>
-      
-      </View>
-      <View style={{padding: 8, marginTop: 0}}>
-      
-        <ScrollView style={{marginTop: 5}}>
-          {array.map((item, index) => (
-            <PersonItem key={index}/>
-          ))}
-        </ScrollView>
-      </View>
-    </ImageBackground>
+    <View
+      style={{
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'white',
+      }}>
+      <Image
+        source={IMAGE.thura}
+        style={{width: 100, height: 100, borderRadius: 100}}
+      />
+      <Text
+        style={{
+          fontFamily: 'Roboto-Bold',
+          color: 'black',
+          fontSize: 12,
+        }}>
+        Thura Lin Htut
+      </Text>
+      <Text>This Voting System is developed by thura lin htut. I started created by </Text>
+    </View>
   );
 };
 

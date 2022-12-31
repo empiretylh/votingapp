@@ -3,7 +3,7 @@
 /* eslint-disable keyword-spacing */
 /* eslint-disable prettier/prettier */
 import {useCardAnimation} from '@react-navigation/stack';
-import React, {useContext, useMemo, useEffect, useRef} from 'react';
+import React, {useContext, useState, useMemo, useEffect, useRef} from 'react';
 import {
   View,
   Text,
@@ -14,6 +14,7 @@ import {
   Easing,
   TouchableOpacity,
   TextInput,
+  RefreshControl,
   ActivityIndicator,
   ScrollView,
 } from 'react-native';
@@ -27,6 +28,7 @@ import {
   CodeContext,
   NameIMEIContext,
   LoadingContext,
+  EndTimeContext,
   DataContext,
 } from '../context/context';
 
@@ -49,6 +51,10 @@ const Home = ({navigation}) => {
 
   const {votedking, votedqueen, query} = useContext(DataContext);
 
+  const {isTimeUp, setIsTimeUp} = useContext(EndTimeContext);
+
+  const [searchText, setSearchText] = useState('');
+  const [isrefresh, setIsRefresh] = useState(false);
   // unVoteKing({queryKey
 
   const checkVotingCode = useQuery(['checkcode', v_code], database.checkCode, {
@@ -116,7 +122,7 @@ const Home = ({navigation}) => {
 
       const sel_k = query.data.data.sel_king;
       const sel_q = query.data.data.sel_queen;
-    
+
       for (var i = 0; i < sel_k.length; i++) {
         sel_k[i] = {
           ...sel_k[i],
@@ -138,9 +144,13 @@ const Home = ({navigation}) => {
         //
       });
 
-      return sort;
+      const final = sort.filter(a =>
+        a.name.toLowerCase().includes(searchText.toLowerCase()),
+      );
+
+      return final;
     }
-  }, [query.data, QueenVotedId, KingVotedId]);
+  }, [query.data, QueenVotedId, KingVotedId, searchText]);
 
   const openProfile = data => {
     navigation.navigate('profile', {
@@ -180,8 +190,8 @@ const Home = ({navigation}) => {
             <Image
               source={IMAGE.ucsd}
               style={{
-                width: 120,
-                height: 120,
+                width: 110,
+                height: 110,
               }}
             />
           </TouchableOpacity>
@@ -190,10 +200,27 @@ const Home = ({navigation}) => {
             style={{
               fontFamily: 'Roboto-Bold',
               color: 'black',
-              fontSize: 15,
+              fontSize: 16,
             }}>
             University of Computer Studies, Dawei
           </Text>
+          {isTimeUp ? (
+            <Text
+              style={{
+                fontFamily: 'Roboto-Bold',
+                color: 'red',
+              }}>
+              Voting time is over
+            </Text>
+          ) : (
+            <Text
+              style={{
+                fontFamily: 'Roboto-Regular',
+                color: 'black',
+              }}>
+              Developed By Thura Lin Htut
+            </Text>
+          )}
         </View>
       </View>
       <View style={{padding: 8, marginTop: 15, flex: 1}}>
@@ -213,6 +240,7 @@ const Home = ({navigation}) => {
             style={styles.searchtextbar}
             placeholder="Search With Name"
             placeholderTextColor="#4d4e4f"
+            onChangeText={e => setSearchText(e)}
           />
           <TouchableOpacity style={{marginRight: 10}} onPress={e => Refresh()}>
             <Image source={IMAGE.icon_search} style={{width: 25, height: 25}} />
@@ -221,7 +249,18 @@ const Home = ({navigation}) => {
         {query.isFetching ? (
           <ActivityIndicator />
         ) : (
-          <ScrollView style={{marginTop: 10}}>
+          <ScrollView
+            style={{marginTop: 10}}
+            refreshControl={
+              <RefreshControl
+                refreshing={
+                  query.isFetching ||
+                  votedking.isFetching ||
+                  votedqueen.isFetching
+                }
+                onRefresh={Refresh}
+              />
+            }>
             {query.data &&
               data.map((item, index) => (
                 <PersonItem

@@ -12,6 +12,7 @@ import {
   Image,
   TouchableOpacity,
   TextInput,
+  RefreshControl,
   ActivityIndicator,
   ScrollView,
 } from 'react-native';
@@ -28,16 +29,7 @@ import {useQuery} from 'react-query';
 import database from '../Data/database';
 
 const King = ({navigation}) => {
-  const {
-    showLoading,
-    setShowLoading,
-    IsVote,
-    setIsVote,
-    VoteQueen,
-    VoteKing,
-    UVK,
-    UVQ,
-  } = useContext(LoadingContext);
+  const {VoteQueen, VoteKing, UVK, UVQ} = useContext(LoadingContext);
 
   const {v_code, setVCode, RemoveCode} = useContext(CodeContext);
 
@@ -51,7 +43,7 @@ const King = ({navigation}) => {
     query.refetch();
   };
 
-   const KingVotedId = useMemo(() => {
+  const KingVotedId = useMemo(() => {
     if (votedking.data) {
       return votedking.data.data !== 0 && votedking.data.data.selection;
     }
@@ -62,16 +54,14 @@ const King = ({navigation}) => {
   const data = useMemo(() => {
     if (query.data) {
       const sel_k = query.data.data.sel_king;
-      if(KingVotedId){
-      for (var i = 0; i < sel_k.length; i++) {
-        sel_k[i] = {
-          ...sel_k[i],
-          ...{vote: sel_k[i].id === KingVotedId ? true : false},
-        };
-          console.log(sel_k[i].vote)
-      }
-
-      
+      if (KingVotedId) {
+        for (var i = 0; i < sel_k.length; i++) {
+          sel_k[i] = {
+            ...sel_k[i],
+            ...{vote: sel_k[i].id === KingVotedId ? true : false},
+          };
+          console.log(sel_k[i].vote);
+        }
       }
 
       const all = sel_k;
@@ -85,7 +75,7 @@ const King = ({navigation}) => {
 
       return sort;
     }
-  }, [query.data,KingVotedId]);
+  }, [query.data, KingVotedId]);
 
   const openProfile = data => {
     navigation.navigate('profile', {
@@ -123,8 +113,6 @@ const King = ({navigation}) => {
     }
   };
 
- 
-
   return (
     <ImageBackground source={IMAGE.boybg} style={{flex: 1}}>
       <View style={styles.topView}>
@@ -147,7 +135,17 @@ const King = ({navigation}) => {
           <ActivityIndicator size={50} color={'white'} />
         ) : (
           <>
-            <ScrollView>
+            <ScrollView
+              refreshControl={
+                <RefreshControl
+                  refreshing={
+                    query.isFetching ||
+                    votedking.isFetching ||
+                    votedqueen.isFetching
+                  }
+                  onRefresh={Refresh}
+                />
+              }>
               {query.data &&
                 data.map((item, index) => (
                   <PersonItem

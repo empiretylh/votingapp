@@ -1,3 +1,5 @@
+/* eslint-disable react-native/no-inline-styles */
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable prettier/prettier */
 import React, {useState, useMemo, useRef, useContext, useEffect} from 'react';
 import {
@@ -6,6 +8,7 @@ import {
   ActivityIndicator,
   Image,
   Animated,
+  TouchableOpacity,
   Easing,
 } from 'react-native';
 import Home from './screens/home';
@@ -30,11 +33,13 @@ import {
   CodeContext,
   NameIMEIContext,
   DataContext,
+  EndTimeContext,
 } from './context/context';
 
 import database from './Data/database';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import {IMAGE} from './Data/data';
+
 const Stack = createStackNavigator();
 
 const MainContainer = () => {
@@ -47,7 +52,62 @@ const MainContainer = () => {
 
   const [IsVote, setIsVote] = useState(false);
 
+
+  const [endInteval, setEndInteval] = useState(100000);
+
+  const [isTimeUp, setIsTimeUp] = useState(false);
+
   let opacity = useRef(new Animated.Value(0)).current;
+
+  const end_time_load = useQuery(['end_time', v_code], database.getEndTime);
+
+  const [showFV, setShowFV] = useState(false);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (!isTimeUp) {
+        end_time_load.refetch();
+      } else {
+        console.log("We don't Load any more", isTimeUp);
+      }
+    }, 10000);
+
+    return () => clearInterval(interval);
+  }, [end_time_load]);
+
+  let time_up = null;
+
+  useEffect(() => {
+    time_up = setTimeout(() => {
+      console.log('I will Time UP nowwwwwwwwwwwwwwwwww');
+      setIsTimeUp(true);
+      setShowFV(true);
+      console.log('We are now time up, We can t vote anymore');
+    }, endInteval);
+
+    return () => clearTimeout(time_up);
+  }, [endInteval]);
+
+  useEffect(() => {
+    if (end_time_load.data) {
+      const nowdate = new Date().getTime();
+      const endtime = new Date(end_time_load.data.data).getTime();
+      if (endtime) {
+        const result = endtime - nowdate;
+        console.log(result, 'Resulltttt');
+        if (result <= 0) {
+          console.log('Time UP');
+          setIsTimeUp(true);
+        }
+
+        console.log('Result Change', result);
+        clearTimeout(time_up);
+        setEndInteval(result);
+
+        console.log('I cleareed Time Out');
+      }
+    }
+  }, [end_time_load.data]);
 
   const query = useQuery({
     queryKey: ['voting', v_code],
@@ -223,6 +283,11 @@ const MainContainer = () => {
     [showLoading, setShowLoading],
   );
 
+  const EndTimeValue = useMemo(
+    () => ({isTimeUp, setIsTimeUp}),
+    [isTimeUp, setIsTimeUp],
+  );
+
   const datavalue = useMemo(
     () => ({votedking, votedqueen, query}),
     [votedking, votedqueen, query],
@@ -237,80 +302,146 @@ const MainContainer = () => {
   }
 
   return (
-    <DataContext.Provider value={datavalue}>
-      <NameIMEIContext.Provider value={nameIMEIValue}>
-        <CodeContext.Provider value={codeValue}>
-          <LoadingContext.Provider value={loadingValue}>
-            <NavigationContainer>
-              <Stack.Navigator
-                screenOptions={{
-                  headerShown: false,
-                }}>
-                {v_code === null ? (
-                  <>
-                    <Stack.Screen name="start" component={Start} />
-                    {/* <Stack.Screen name="name" component={Start} /> */}
-                  </>
-                ) : (
-                  <>
-                    {name_IMEI === null ? (
-                      <>
-                        <Stack.Screen name="name" component={Name} />
-                      </>
-                    ) : (
-                      <>
-                        <Stack.Screen name="main" component={Container} />
-                        <Stack.Screen name="profile" component={Profile} />
-                      </>
-                    )}
-                  </>
-                )}
-              </Stack.Navigator>
-            </NavigationContainer>
-            {showLoading ? (
-              <View
-                style={{
-                  position: 'absolute',
-                  width: '100%',
-                  height: '100%',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}>
+    <EndTimeContext.Provider value={EndTimeValue}>
+      <DataContext.Provider value={datavalue}>
+        <NameIMEIContext.Provider value={nameIMEIValue}>
+          <CodeContext.Provider value={codeValue}>
+            <LoadingContext.Provider value={loadingValue}>
+              <NavigationContainer>
+                <Stack.Navigator
+                  screenOptions={{
+                    headerShown: false,
+                  }}>
+                  {v_code === null ? (
+                    <>
+                      <Stack.Screen name="start" component={Start} />
+                      {/* <Stack.Screen name="name" component={Start} /> */}
+                    </>
+                  ) : (
+                    <>
+                      {name_IMEI === null ? (
+                        <>
+                          <Stack.Screen name="name" component={Name} />
+                        </>
+                      ) : (
+                        <>
+                          <Stack.Screen name="main" component={Container} />
+                          <Stack.Screen name="profile" component={Profile} />
+                        </>
+                      )}
+                    </>
+                  )}
+                </Stack.Navigator>
+              </NavigationContainer>
+              {showFV && (
                 <View
                   style={{
-                    backgroundColor: 'white',
-                    padding: 10,
-                    borderRadius: 15,
-                    shadowColor: '#000',
-                    elevation: 12,
-                  }}>
-                  <View>
-                    {IsVote ? (
-                      <Animated.View style={animatedStyles}>
-                        <Image
-                          source={IMAGE.hearticon}
-                          style={{
-                            width: 10,
-                            height: 10,
+                    position: 'absolute',
+                    flex: 1,
+                    width: '100%',
+                    height: '100%',
 
-                            tintColor: '#FF5F5F',
-                          }}
-                          reszieMethod={'scale'}
-                          resizeMode={'contain'}
-                        />
-                      </Animated.View>
-                    ) : (
-                      <ActivityIndicator size={50} color={'#000'} />
-                    )}
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}>
+                  <View
+                    style={{
+                      padding: 15,
+                      width: '90%',
+                      backgroundColor: 'white',
+                      borderRadius: 15,
+                      shadowColor: 'black',
+
+                      elevation: 5,
+                    }}>
+                    <Text
+                      style={{
+                        fontSize: 18,
+                        fontFamily: 'Roboto-Bold',
+                        color: 'red',
+                        textAlign: 'center',
+                      }}>
+                      VOTING TIME IS OVER.
+                    </Text>
+                    <Text
+                      style={{
+                        fontSize: 15,
+                        color: '#0f0f0f',
+                        textAlign: 'auto',
+                        marginTop: 10,
+                      }}>
+                      you can't vote anymore. Thank you for your vote. Ask your
+                      administrator for poll results.
+                    </Text>
+                    <TouchableOpacity
+                      style={{
+                        backgroundColor: '#f53354',
+                        padding: 10,
+                        borderRadius: 15,
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        flexDirection: 'row',
+                        marginTop: 10,
+                      }}
+                      onPress={() => setShowFV(false)}>
+                      <Text
+                        style={{
+                          color: 'white',
+                          fontFamily: 'Roboto-Bold',
+                          fontSize: 20,
+                        }}>
+                        Close Now
+                      </Text>
+                    </TouchableOpacity>
                   </View>
-                  {loadingtext && <Text>{loadingtext}</Text>}
                 </View>
-              </View>
-            ) : null}
-          </LoadingContext.Provider>
-        </CodeContext.Provider>
-      </NameIMEIContext.Provider>
-    </DataContext.Provider>
+              )}
+
+              {showLoading ? (
+                <View
+                  style={{
+                    position: 'absolute',
+                    width: '100%',
+                    height: '100%',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}>
+                  <View
+                    style={{
+                      backgroundColor: 'white',
+                      padding: 10,
+                      borderRadius: 15,
+                      shadowColor: '#000',
+                      elevation: 12,
+                    }}>
+                    <View>
+                      {IsVote ? (
+                        <Animated.View style={animatedStyles}>
+                          <Image
+                            source={IMAGE.hearticon}
+                            style={{
+                              width: 10,
+                              height: 10,
+
+                              tintColor: '#FF5F5F',
+                            }}
+                            reszieMethod={'scale'}
+                            resizeMode={'contain'}
+                          />
+                        </Animated.View>
+                      ) : (
+                        <ActivityIndicator size={50} color={'#000'} />
+                      )}
+                    </View>
+                    {loadingtext && <Text>{loadingtext}</Text>}
+                  </View>
+                </View>
+              ) : null}
+            </LoadingContext.Provider>
+          </CodeContext.Provider>
+        </NameIMEIContext.Provider>
+      </DataContext.Provider>
+    </EndTimeContext.Provider>
   );
 };
 
