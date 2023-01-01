@@ -1,18 +1,45 @@
+/* eslint-disable react-native/no-inline-styles */
 /* eslint-disable prettier/prettier */
-import React, {useEffect} from 'react';
+import React, {useEffect, useContext, useRef} from 'react';
 import {
   View,
   Text,
   Dimensions,
   TouchableOpacity,
   PermissionsAndroid,
+  Image,
   StyleSheet,
 } from 'react-native';
 
 import QRCodeScanner from 'react-native-qrcode-scanner';
 import {RNCamera} from 'react-native-camera';
+import EncryptedStorage from 'react-native-encrypted-storage';
+import {LoadingContext, CodeContext} from '../context/context';
+import database from '../Data/database';
+import {useQuery} from 'react-query';
+import {IMAGE} from '../Data/data';
 
+const qrcodesize = Dimensions.get('window').width - 40;
 const QRCodeScreen = ({navigation}) => {
+  const code = useRef(0);
+
+  const {showLoading, setShowLoading} = useContext(LoadingContext);
+  const {v_code, setVCode} = useContext(CodeContext);
+
+  const checkCode = useQuery(['checkcode', code.current], database.checkCode, {
+    onSuccess: e => {
+      if (e.data === 1) {
+        setVCode(code.current);
+        EncryptedStorage.setItem('temp_code', code.current);
+      } else {
+        if (code.current) {
+          alert('This Code Is Invalid');
+        }
+      }
+      setShowLoading(false);
+    },
+  });
+
   const requestCameraPermission = async () => {
     try {
       const granted = await PermissionsAndroid.request(
@@ -43,21 +70,45 @@ const QRCodeScreen = ({navigation}) => {
   }, []);
 
   const onSuccess = e => {
-    console.log(e.data);
+    code.current = e.data;
+    checkCode.refetch();
   };
+
   return (
     <>
+      <TouchableOpacity
+        style={{position: 'absolute', top: 10, left: 10}}
+        onPress={() => navigation.goBack()}>
+        <Image
+          source={IMAGE.backicon}
+          style={{width: 25, height: 25}}
+          resizeMode={'contain'}
+        />
+      </TouchableOpacity>
       <QRCodeScanner
         onRead={onSuccess}
         topContent={
-          <Text style={styles.centerText}>
-            Scan QRCode, that code specificilized for voting system
-          </Text>
+          <View
+            style={{
+              flex: 1,
+              alignItems: 'center',
+              justifyContent: 'center',
+
+              marginBottom: 10,
+            }}>
+            <Image source={IMAGE.king_crown} style={{width: 50, height: 50}} />
+            <Text style={styles.centerText}>
+              Scan the QRCode that specially created for the voting system.
+            </Text>
+          </View>
         }
         bottomContent={
-          <TouchableOpacity style={styles.buttonTouchable}>
-            <Text style={styles.buttonText}>OK. Got it!</Text>
-          </TouchableOpacity>
+          <View>
+            <Text style={{color: 'black', fontFamily: 'Roboto-Regular'}}>
+              If this QR code doesn't work on your devices, Use the voting code
+              instead.
+            </Text>
+          </View>
         }
       />
       <View
@@ -69,6 +120,14 @@ const QRCodeScreen = ({navigation}) => {
           alignItems: 'center',
           justifyContent: 'center',
         }}>
+        <Image
+          source={IMAGE.icon_scan}
+          style={{
+            width: qrcodesize,
+            height: qrcodesize,
+            tintColor: '#fff',
+          }}
+        />
         <Text style={{color: 'white'}}>Scan QRCode</Text>
       </View>
     </>
@@ -80,7 +139,8 @@ const styles = StyleSheet.create({
   centerText: {
     flex: 1,
     fontSize: 18,
-    padding: 32,
+    paddingLeft: 30,
+    paddingRight: 30,
     color: 'black',
     textAlign: 'center',
   },

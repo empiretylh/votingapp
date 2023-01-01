@@ -53,7 +53,7 @@ const MainContainer = () => {
 
   const [IsVote, setIsVote] = useState(false);
 
-  const [endInteval, setEndInteval] = useState(100000);
+  const [endInteval, setEndInteval] = useState(900000);
 
   const [isTimeUp, setIsTimeUp] = useState(false);
 

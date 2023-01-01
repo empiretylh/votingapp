@@ -74,32 +74,37 @@ class Database {
 
   getVotedKing({queryKey}) {
     const [_, votingcode, dvid] = queryKey;
-    return axios.get('/api/voteking/', {
-      params: {
-        votingcode: votingcode,
-        deviceid: dvid,
-      },
-    });
+    if (votingcode) {
+      return axios.get('/api/voteking/', {
+        params: {
+          votingcode: votingcode,
+          deviceid: dvid,
+        },
+      });
+    }
   }
 
   getVotedQueen({queryKey}) {
     const [_, votingcode, dvid] = queryKey;
-    return axios.get('/api/votequeen/', {
-      params: {
-        votingcode: votingcode,
-        deviceid: dvid,
-      },
-    });
+    if (votingcode) {
+      return axios.get('/api/votequeen/', {
+        params: {
+          votingcode: votingcode,
+          deviceid: dvid,
+        },
+      });
+    }
   }
 
   getEndTime({queryKey}) {
     const [_, votingcode] = queryKey;
-
-    return axios.get('/api/endtime/', {
-      params: {
-        votingcode: votingcode,
-      },
-    });
+    if (votingcode) {
+      return axios.get('/api/endtime/', {
+        params: {
+          votingcode: votingcode,
+        },
+      });
+    }
   }
 
   registerDevice(data) {

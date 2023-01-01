@@ -139,10 +139,12 @@ const Home = ({navigation}) => {
 
       const all = sel_k && sel_k.concat(sel_q);
 
-      const sort = all.sort((a, b) => {
-        return b.vote ? 1 : -1;
-        //
-      });
+      const sort =
+        all &&
+        all.sort((a, b) => {
+          return b.vote ? 1 : -1;
+          //
+        });
 
       const final = sort.filter(a =>
         a.name.toLowerCase().includes(searchText.toLowerCase()),

@@ -22,27 +22,34 @@ const Home = () => {
   const array = Array.from({length: 10}, (_, i) => i + 1);
 
   return (
-    <View
-      style={{
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: 'white',
-      }}>
-      <Image
-        source={IMAGE.thura}
-        style={{width: 100, height: 100, borderRadius: 100}}
-      />
-      <Text
-        style={{
-          fontFamily: 'Roboto-Bold',
-          color: 'black',
-          fontSize: 12,
-        }}>
-        Thura Lin Htut
+    <ScrollView style={{flex:1}}>
+      <View style={{flex: 1}}>
+        <View
+          style={{
+            backgroundColor: 'blue',
+            flex: 1,
+            position: 'absolute',
+            width: '100%',
+            height: 500,
+          }}
+        />
+        <Image
+          source={IMAGE.thura}
+          style={{width: 100, height: 100, borderRadius: 100}}
+        />
+        <Text
+          style={{
+            fontFamily: 'Roboto-Regular',
+            color: 'black',
+            fontSize: 18,
+          }}>
+          Thura Lin Htut
+        </Text>
+      </View>
+      <Text>
+        This Voting System is developed by thura lin htut. I started created by{' '}
       </Text>
-      <Text>This Voting System is developed by thura lin htut. I started created by </Text>
-    </View>
+    </ScrollView>
   );
 };
 
