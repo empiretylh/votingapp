@@ -33,5 +33,5 @@ export const IMAGE  = {
      thura:require('../../assets/i.png'),
 }
 
-export const URL = 'https://8000-empiretylh-voting-nk9gc2pbav5.ws-us80.gitpod.io';
+export const URL = 'https://csvote.pythonanywhere.com';
 

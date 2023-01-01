@@ -4,6 +4,7 @@
 /* eslint-disable prettier/prettier */
 import {useCardAnimation} from '@react-navigation/stack';
 import React, {useRef, useContext, useMemo} from 'react';
+
 import {
   View,
   Text,
@@ -24,20 +25,20 @@ import PersonItem from './components/personItem';
 import database from '../Data/database';
 import {useQuery} from 'react-query';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import {LoadingContext,CodeContext} from '../context/context';
+import {LoadingContext, CodeContext} from '../context/context';
 const s_width = Dimensions.get('window').width;
 
-const Home = () => {
+const Home = ({navigation}) => {
   const array = Array.from({length: 20}, (_, i) => i + 1);
 
   const code = useRef(0);
 
   const {showLoading, setShowLoading} = useContext(LoadingContext);
-  const {v_code,setVCode} = useContext(CodeContext);
+  const {v_code, setVCode} = useContext(CodeContext);
 
   const checkCode = useQuery(['checkcode', code.current], database.checkCode, {
     onSuccess: e => {
-      if (e.data ===1) {
+      if (e.data === 1) {
         setVCode(code.current);
         EncryptedStorage.setItem('temp_code', code.current);
       } else {
@@ -101,6 +102,9 @@ const Home = () => {
               justifyContent: 'center',
               borderRadius: 15,
               marginTop: 10,
+            }}
+            onPress={() => {
+              navigation.navigate('qrcodescreen');
             }}>
             <Image
               source={I.scanicon}
@@ -147,7 +151,7 @@ const Home = () => {
               fontSize: 20,
             }}
             placeholder={'Code - XXXXX'}
-              placeholderTextColor='#4d4e4f'
+            placeholderTextColor="#4d4e4f"
             keyboardType={'numeric'}
             maxLength={5}
             onChangeText={e => (code.current = e)}

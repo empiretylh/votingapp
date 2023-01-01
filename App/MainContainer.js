@@ -39,6 +39,7 @@ import {
 import database from './Data/database';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import {IMAGE} from './Data/data';
+import QRCodeScreen from './screens/QRCodeScan';
 
 const Stack = createStackNavigator();
 
@@ -51,7 +52,6 @@ const MainContainer = () => {
   const [name_IMEI, setName_IMEI] = useState(null);
 
   const [IsVote, setIsVote] = useState(false);
-
 
   const [endInteval, setEndInteval] = useState(100000);
 
@@ -67,8 +67,6 @@ const MainContainer = () => {
     const interval = setInterval(() => {
       if (!isTimeUp) {
         end_time_load.refetch();
-      } else {
-        console.log("We don't Load any more", isTimeUp);
       }
     }, 10000);
 
@@ -79,10 +77,8 @@ const MainContainer = () => {
 
   useEffect(() => {
     time_up = setTimeout(() => {
-      console.log('I will Time UP nowwwwwwwwwwwwwwwwww');
       setIsTimeUp(true);
       setShowFV(true);
-      console.log('We are now time up, We can t vote anymore');
     }, endInteval);
 
     return () => clearTimeout(time_up);
@@ -315,6 +311,10 @@ const MainContainer = () => {
                   {v_code === null ? (
                     <>
                       <Stack.Screen name="start" component={Start} />
+                      <Stack.Screen
+                        name="qrcodescreen"
+                        component={QRCodeScreen}
+                      />
                       {/* <Stack.Screen name="name" component={Start} /> */}
                     </>
                   ) : (
