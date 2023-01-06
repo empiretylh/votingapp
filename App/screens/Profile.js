@@ -36,8 +36,24 @@ const Home = ({navigation, route}) => {
   const {data} = route.params;
 
   const OpenFacebook = link => {
-    let user = 'https://www.facebook.com/khin.c.tun.102';
-    Linking.openURL(`fb://facewebmodal/f?href={user}`);
+    let user =link;
+    console.log(user);
+
+    var urlParts = user.split('=');
+
+    var fbId = urlParts[urlParts.length-1];
+
+    console.log(fbId)
+
+
+
+    if( parseInt(fbId)){
+      console.log('ID Open')
+     Linking.openURL('fb://profile/'+fbId)
+    }else{
+      console.log('WEb open')
+      Linking.openURL('fb://facewebmodal/f?href='+fbId);
+    }
   };
 
   const OpenInstagram = username => {
