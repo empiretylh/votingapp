@@ -36,7 +36,7 @@ const Home = ({navigation}) => {
   const array = Array.from({length: 20}, (_, i) => i + 1);
 
   const {v_code, setVCode, RemoveCode} = useContext(CodeContext);
-  const {name_IMEI, setName_IMEI, setName_ID, Remove_NameID} =
+  const {name_IMEI, setName_IMEI, setName_ID, Remove_NameID,menu,setMenu} =
     useContext(NameIMEIContext);
   const {
     showLoading,
@@ -110,7 +110,8 @@ const Home = ({navigation}) => {
 
   const QueenVotedId = useMemo(() => {
     if (votedqueen.data) {
-      return votedqueen.data.data !== 0 && votedqueen.data.data.selection;
+      return votedqueen.data.data !== 0   // RemoveCode();
+              // Remove_NameID();&& votedqueen.data.data.selection;
     }
 
     return 0;
@@ -120,8 +121,8 @@ const Home = ({navigation}) => {
     if (query.data) {
       console.log(query.data.data);
 
-      const sel_k = query.data.data.sel_king;
-      const sel_q = query.data.data.sel_queen;
+      const sel_k = query.data && query.data.data.sel_king;
+      const sel_q = query.data && query.data.data.sel_queen;
 
       for (var i = 0; i < sel_k.length; i++) {
         sel_k[i] = {
@@ -153,7 +154,8 @@ const Home = ({navigation}) => {
       return final;
     }
   }, [query.data, QueenVotedId, KingVotedId, searchText]);
-
+  // RemoveCode();
+              // Remove_NameID();
   const openProfile = data => {
     navigation.navigate('profile', {
       data: data,
@@ -178,8 +180,9 @@ const Home = ({navigation}) => {
           <Text style={styles.logotext}>UCSD VOTING</Text>
           <TouchableOpacity
             onPress={() => {
-              RemoveCode();
-              Remove_NameID();
+              // RemoveCode();
+              setMenu(true);
+              // Remove_NameID();
             }}>
             <Image
               source={IMAGE.icon_question}

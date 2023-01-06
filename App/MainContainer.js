@@ -18,6 +18,8 @@ import Profile from './screens/Profile';
 import Container from './Container';
 import Start from './screens/Start';
 import Name from './screens/Name';
+
+import LoadingScreen from './screens/LoadingScreen';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import {
@@ -40,8 +42,12 @@ import database from './Data/database';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import {IMAGE} from './Data/data';
 import QRCodeScreen from './screens/QRCodeScan';
+import NoInternet from './screens/NoInternet';
+import NetInfo from '@react-native-community/netinfo';
 
 const Stack = createStackNavigator();
+
+import {onlineManager} from 'react-query';
 
 const MainContainer = () => {
   const [showLoading, setShowLoading] = useState(false);
@@ -62,6 +68,24 @@ const MainContainer = () => {
   const end_time_load = useQuery(['end_time', v_code], database.getEndTime);
 
   const [showFV, setShowFV] = useState(false);
+
+  const [isIConnected, setIConnected] = useState(null);
+
+  useEffect(() => {
+    const listener = NetInfo.addEventListener(state => {
+      setIConnected(state.isConnected);
+    });
+
+    onlineManager.setEventListener(setOnline => {
+      return NetInfo.addEventListener(state => {
+        setOnline(state.isConnected);
+      });
+    });
+
+    return () => {
+      listener();
+    };
+  }, []);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -161,9 +185,11 @@ const MainContainer = () => {
     let r = await EncryptedStorage.setItem('name_IMEI', null);
   };
 
+  const [menu, setMenu] = useState(false);
+
   const nameIMEIValue = useMemo(
-    () => ({name_IMEI, setName_IMEI, setName_ID, Remove_NameID}),
-    [name_IMEI, setName_IMEI],
+    () => ({name_IMEI, setName_IMEI, setName_ID, Remove_NameID, menu, setMenu}),
+    [name_IMEI, setName_IMEI, menu, setMenu],
   );
 
   useEffect(() => {
@@ -289,160 +315,254 @@ const MainContainer = () => {
     [votedking, votedqueen, query],
   );
 
+  useMemo(() => {
+    if (isIConnected) {
+      query.refetch();
+      votedqueen.refetch();
+      votedking.refetch();
+    }
+  }, [isIConnected]);
+
   if (load) {
-    return (
-      <View>
-        <Text>Loaing</Text>
-      </View>
-    );
+    return <LoadingScreen />;
   }
 
-  return (
-    <EndTimeContext.Provider value={EndTimeValue}>
-      <DataContext.Provider value={datavalue}>
-        <NameIMEIContext.Provider value={nameIMEIValue}>
-          <CodeContext.Provider value={codeValue}>
-            <LoadingContext.Provider value={loadingValue}>
-              <NavigationContainer>
-                <Stack.Navigator
-                  screenOptions={{
-                    headerShown: false,
-                  }}>
-                  {v_code === null ? (
-                    <>
-                      <Stack.Screen name="start" component={Start} />
-                      <Stack.Screen
-                        name="qrcodescreen"
-                        component={QRCodeScreen}
-                      />
-                      {/* <Stack.Screen name="name" component={Start} /> */}
-                    </>
-                  ) : (
-                    <>
-                      {name_IMEI === null ? (
-                        <>
-                          <Stack.Screen name="name" component={Name} />
-                        </>
-                      ) : (
-                        <>
-                          <Stack.Screen name="main" component={Container} />
-                          <Stack.Screen name="profile" component={Profile} />
-                        </>
-                      )}
-                    </>
-                  )}
-                </Stack.Navigator>
-              </NavigationContainer>
-              {showFV && (
-                <View
-                  style={{
-                    position: 'absolute',
-                    flex: 1,
-                    width: '100%',
-                    height: '100%',
-
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                  }}>
+  if (isIConnected === true) {
+    return (
+      <EndTimeContext.Provider value={EndTimeValue}>
+        <DataContext.Provider value={datavalue}>
+          <NameIMEIContext.Provider value={nameIMEIValue}>
+            <CodeContext.Provider value={codeValue}>
+              <LoadingContext.Provider value={loadingValue}>
+                <NavigationContainer>
+                  <Stack.Navigator
+                    screenOptions={{
+                      headerShown: false,
+                    }}>
+                    {v_code === null ? (
+                      <>
+                        <Stack.Screen name="start" component={Start} />
+                        <Stack.Screen
+                          name="qrcodescreen"
+                          component={QRCodeScreen}
+                        />
+                        {/* <Stack.Screen name="name" component={Start} /> */}
+                      </>
+                    ) : (
+                      <>
+                        {name_IMEI === null ? (
+                          <>
+                            <Stack.Screen name="name" component={Name} />
+                          </>
+                        ) : (
+                          <>
+                            <Stack.Screen name="main" component={Container} />
+                            <Stack.Screen name="profile" component={Profile} />
+                          </>
+                        )}
+                      </>
+                    )}
+                  </Stack.Navigator>
+                </NavigationContainer>
+                {showFV && (
                   <View
                     style={{
-                      padding: 15,
-                      width: '90%',
-                      backgroundColor: 'white',
-                      borderRadius: 15,
-                      shadowColor: 'black',
+                      position: 'absolute',
+                      flex: 1,
+                      width: '100%',
+                      height: '100%',
 
-                      elevation: 5,
+                      justifyContent: 'center',
+                      alignItems: 'center',
                     }}>
-                    <Text
+                    <View
                       style={{
-                        fontSize: 18,
-                        fontFamily: 'Roboto-Bold',
-                        color: 'red',
-                        textAlign: 'center',
-                      }}>
-                      VOTING TIME IS OVER.
-                    </Text>
-                    <Text
-                      style={{
-                        fontSize: 15,
-                        color: '#0f0f0f',
-                        textAlign: 'auto',
-                        marginTop: 10,
-                      }}>
-                      you can't vote anymore. Thank you for your vote. Ask your
-                      administrator for poll results.
-                    </Text>
-                    <TouchableOpacity
-                      style={{
-                        backgroundColor: '#f53354',
-                        padding: 10,
+                        padding: 15,
+                        width: '90%',
+                        backgroundColor: 'white',
                         borderRadius: 15,
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        flexDirection: 'row',
-                        marginTop: 10,
-                      }}
-                      onPress={() => setShowFV(false)}>
+                        shadowColor: 'black',
+
+                        elevation: 5,
+                      }}>
                       <Text
                         style={{
-                          color: 'white',
+                          fontSize: 18,
                           fontFamily: 'Roboto-Bold',
-                          fontSize: 20,
+                          color: 'red',
+                          textAlign: 'center',
                         }}>
-                        Close Now
+                        VOTING TIME IS OVER.
                       </Text>
-                    </TouchableOpacity>
+                      <Text
+                        style={{
+                          fontSize: 15,
+                          color: '#0f0f0f',
+                          textAlign: 'auto',
+                          marginTop: 10,
+                        }}>
+                        you can't vote anymore. Thank you for your vote. Ask
+                        your administrator for poll results.
+                      </Text>
+                      <TouchableOpacity
+                        style={{
+                          backgroundColor: '#f53354',
+                          padding: 10,
+                          borderRadius: 15,
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          flexDirection: 'row',
+                          marginTop: 10,
+                        }}
+                        onPress={() => setShowFV(false)}>
+                        <Text
+                          style={{
+                            color: 'white',
+                            fontFamily: 'Roboto-Bold',
+                            fontSize: 20,
+                          }}>
+                          Close Now
+                        </Text>
+                      </TouchableOpacity>
+                    </View>
                   </View>
-                </View>
-              )}
+                )}
 
-              {showLoading ? (
-                <View
-                  style={{
-                    position: 'absolute',
-                    width: '100%',
-                    height: '100%',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}>
+                {menu && (
                   <View
                     style={{
-                      backgroundColor: 'white',
-                      padding: 10,
-                      borderRadius: 15,
-                      shadowColor: '#000',
-                      elevation: 12,
-                    }}>
-                    <View>
-                      {IsVote ? (
-                        <Animated.View style={animatedStyles}>
-                          <Image
-                            source={IMAGE.hearticon}
-                            style={{
-                              width: 10,
-                              height: 10,
+                      position: 'absolute',
+                      flex: 1,
+                      width: '100%',
+                      height: '100%',
 
-                              tintColor: '#FF5F5F',
-                            }}
-                            reszieMethod={'scale'}
-                            resizeMode={'contain'}
-                          />
-                        </Animated.View>
-                      ) : (
-                        <ActivityIndicator size={50} color={'#000'} />
-                      )}
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                    }}>
+                    <View
+                      style={{
+                        padding: 15,
+                        width: '90%',
+                        backgroundColor: 'white',
+                        borderRadius: 15,
+                        shadowColor: 'black',
+
+                        elevation: 5,
+                      }}>
+                      <Text
+                        style={{
+                          fontSize: 18,
+                          fontFamily: 'Roboto-Bold',
+                          color: 'black',
+                          textAlign: 'center',
+                        }}>
+                        Voting
+                      </Text>
+
+                      <TouchableOpacity
+                        style={{
+                          backgroundColor: 'blue',
+                          padding: 10,
+                          borderRadius: 15,
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          flexDirection: 'row',
+                          marginTop: 10,
+                        }}
+                        onPress={() => {
+                          RemoveCode();
+                          Remove_NameID();
+                          setMenu(false);
+
+                          //                         RemoveCode();
+                          //                         const remove = setTimeout(() => {
+                          //                           Remove_NameID();
+                          //                         }, 1000);
+                          //
+                          //                         clearTimeout(remove);
+                        }}>
+                        <Text
+                          style={{
+                            color: 'white',
+                            fontFamily: 'Roboto-Bold',
+                            fontSize: 20,
+                          }}>
+                          + New Voting
+                        </Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        style={{
+                          backgroundColor: '#f53354',
+                          padding: 10,
+                          borderRadius: 15,
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          flexDirection: 'row',
+                          marginTop: 10,
+                        }}
+                        onPress={() => setMenu(false)}>
+                        <Text
+                          style={{
+                            color: 'white',
+                            fontFamily: 'Roboto-Bold',
+                            fontSize: 20,
+                          }}>
+                          x CLOSE
+                        </Text>
+                      </TouchableOpacity>
                     </View>
-                    {loadingtext && <Text>{loadingtext}</Text>}
                   </View>
-                </View>
-              ) : null}
-            </LoadingContext.Provider>
-          </CodeContext.Provider>
-        </NameIMEIContext.Provider>
-      </DataContext.Provider>
-    </EndTimeContext.Provider>
-  );
+                )}
+
+                {showLoading ? (
+                  <View
+                    style={{
+                      position: 'absolute',
+                      width: '100%',
+                      height: '100%',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}>
+                    <View
+                      style={{
+                        backgroundColor: 'white',
+                        padding: 10,
+                        borderRadius: 15,
+                        shadowColor: '#000',
+                        elevation: 12,
+                      }}>
+                      <View>
+                        {IsVote ? (
+                          <Animated.View style={animatedStyles}>
+                            <Image
+                              source={IMAGE.hearticon}
+                              style={{
+                                width: 10,
+                                height: 10,
+
+                                tintColor: '#FF5F5F',
+                              }}
+                              reszieMethod={'scale'}
+                              resizeMode={'contain'}
+                            />
+                          </Animated.View>
+                        ) : (
+                          <ActivityIndicator size={50} color={'#000'} />
+                        )}
+                      </View>
+                      {loadingtext && <Text>{loadingtext}</Text>}
+                    </View>
+                  </View>
+                ) : null}
+              </LoadingContext.Provider>
+            </CodeContext.Provider>
+          </NameIMEIContext.Provider>
+        </DataContext.Provider>
+      </EndTimeContext.Provider>
+    );
+  } else {
+    return <NoInternet />;
+  }
 };
 
 export default MainContainer;

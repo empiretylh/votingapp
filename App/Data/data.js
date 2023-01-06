@@ -30,6 +30,11 @@ export const IMAGE = {
 
   thura: require('../../assets/i.png'),
   icon_scan: require('../../assets/scan2.png'),
+
+  ic_fb :require('../../assets/facebook.png'),
+  ic_ig :require('../../assets/ig.png'),
+  ic_github :require('../../assets/github.png'),
+  ic_linkedin :require('../../assets/linkedin.png'),
 };
 
 export const URL = 'https://csvote.pythonanywhere.com';
