@@ -1,4 +1,4 @@
-package com.votingapp;
+package com.empire.votingapp;
 
 import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;

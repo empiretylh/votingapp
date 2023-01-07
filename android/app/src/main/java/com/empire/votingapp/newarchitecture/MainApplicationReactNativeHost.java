@@ -1,4 +1,4 @@
-package com.votingapp.newarchitecture;
+package com.empire.votingapp.newarchitecture;
 
 import android.app.Application;
 import androidx.annotation.NonNull;
@@ -19,9 +19,9 @@ import com.facebook.react.fabric.CoreComponentsRegistry;
 import com.facebook.react.fabric.FabricJSIModuleProvider;
 import com.facebook.react.fabric.ReactNativeConfig;
 import com.facebook.react.uimanager.ViewManagerRegistry;
-import com.votingapp.BuildConfig;
-import com.votingapp.newarchitecture.components.MainComponentsRegistry;
-import com.votingapp.newarchitecture.modules.MainApplicationTurboModuleManagerDelegate;
+import com.empire.votingapp.BuildConfig;
+import com.empire.votingapp.newarchitecture.components.MainComponentsRegistry;
+import com.empire.votingapp.newarchitecture.modules.MainApplicationTurboModuleManagerDelegate;
 import java.util.ArrayList;
 import java.util.List;
 
