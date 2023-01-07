@@ -108,10 +108,9 @@ const Home = ({navigation}) => {
     return 0;
   }, [votedking.data]);
 
-  const QueenVotedId = useMemo(() => {
+ const QueenVotedId = useMemo(() => {
     if (votedqueen.data) {
-      return votedqueen.data.data !== 0   // RemoveCode();
-              // Remove_NameID();&& votedqueen.data.data.selection;
+      return votedqueen.data.data !== 0 && votedqueen.data.data.selection;
     }
 
     return 0;
