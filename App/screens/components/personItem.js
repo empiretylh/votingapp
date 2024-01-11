@@ -1,32 +1,33 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable react-native/no-inline-styles */
-import React,{useContext} from 'react';
+import React, { useContext } from 'react';
 
-import {View, Text, StyleSheet, Image, TouchableOpacity} from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, Vibration } from 'react-native';
 
-import {IMAGE as I} from '../../Data/data';
+import { IMAGE as I } from '../../Data/data';
 import axios from 'axios';
 
 import { EndTimeContext } from '../../context/context';
 
-const PersonItem = ({data, OpenProfile, onVote, votedId,onUnVote}) => {
+const PersonItem = ({ data, OpenProfile, onVote, votedId, onUnVote }) => {
 
-  const {isTimeUp,setIsTimeUp} = useContext(EndTimeContext);
- 
+  const { isTimeUp, setIsTimeUp } = useContext(EndTimeContext);
+
 
 
   return (
     <View style={styles.view}>
-      <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
         <TouchableOpacity
-          style={{flexDirection: 'row'}}
+          style={{ flexDirection: 'row' }}
           onPress={() => {
             OpenProfile(data);
+            Vibration.vibrate(100);
           }}>
           <Image
             source={
               data && data.profileimage
-                ? {uri: axios.defaults.baseURL + data.profileimage}
+                ? { uri: axios.defaults.baseURL + data.profileimage }
                 : I.person1
             }
             style={{
@@ -38,16 +39,16 @@ const PersonItem = ({data, OpenProfile, onVote, votedId,onUnVote}) => {
             }}
           />
           {/* <Text>{data && data.profileimage}</Text> */}
-          <View style={{marginLeft: 8, marginTop: 2}}>
-            <View style={{flexDirection: 'row'}}>
+          <View style={{ marginLeft: 8, marginTop: 2 }}>
+            <View style={{ flexDirection: 'row' }}>
               <Text style={styles.name}>{data && data.name}</Text>
               <Image
                 source={I.icon_tickmark}
-                style={{width: 20, height: 20, marginLeft: 5}}
+                style={{ width: 20, height: 20, marginLeft: 5 }}
               />
             </View>
             <Text style={styles.text}>{data && data.year}</Text>
-            <TouchableOpacity onPress={() => OpenProfile(data)}>
+            <TouchableOpacity onPress={() => { OpenProfile(data); Vibration.vibrate(100) }}>
               <Text style={styles.text}>
                 See {data && data.is_male ? 'His' : 'Her'} Photos >
               </Text>
@@ -118,7 +119,7 @@ const PersonItem = ({data, OpenProfile, onVote, votedId,onUnVote}) => {
                 </TouchableOpacity>
               )}
             </>
-          ):null}
+          ) : null}
         </View>
       </View>
     </View>

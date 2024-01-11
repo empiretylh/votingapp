@@ -2,8 +2,8 @@
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable keyword-spacing */
 /* eslint-disable prettier/prettier */
-import {useCardAnimation} from '@react-navigation/stack';
-import React, {useContext, useState, useMemo, useEffect, useRef} from 'react';
+import { useCardAnimation } from '@react-navigation/stack';
+import React, { useContext, useState, useMemo, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -18,11 +18,11 @@ import {
   ActivityIndicator,
   ScrollView,
 } from 'react-native';
-import {IMAGE} from '../Data/data';
+import { IMAGE } from '../Data/data';
 
 import PersonItem from './components/personItem';
 import database from '../Data/database';
-import {useQuery, useMutation} from 'react-query';
+import { useQuery, useMutation } from 'react-query';
 
 import {
   CodeContext,
@@ -32,11 +32,11 @@ import {
   DataContext,
 } from '../context/context';
 
-const Home = ({navigation}) => {
-  const array = Array.from({length: 20}, (_, i) => i + 1);
+const Home = ({ navigation }) => {
+  const array = Array.from({ length: 20 }, (_, i) => i + 1);
 
-  const {v_code, setVCode, RemoveCode} = useContext(CodeContext);
-  const {name_IMEI, setName_IMEI, setName_ID, Remove_NameID,menu,setMenu} =
+  const { v_code, setVCode, RemoveCode } = useContext(CodeContext);
+  const { name_IMEI, setName_IMEI, setName_ID, Remove_NameID, menu, setMenu } =
     useContext(NameIMEIContext);
   const {
     showLoading,
@@ -49,12 +49,40 @@ const Home = ({navigation}) => {
     UVQ,
   } = useContext(LoadingContext);
 
-  const {votedking, votedqueen, query} = useContext(DataContext);
+  const { votedking, votedqueen, query } = useContext(DataContext);
 
-  const {isTimeUp, setIsTimeUp} = useContext(EndTimeContext);
+  const { isTimeUp, setIsTimeUp, endInteval: endInterval, endtime } = useContext(EndTimeContext);
 
   const [searchText, setSearchText] = useState('');
   const [isrefresh, setIsRefresh] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(endInterval)
+
+  useEffect(() => {
+
+    // Only start the countdown if the countdown is not at zero
+    if (endInterval > 0) {
+      const timerId = setInterval(() => {
+        let now  = new Date().getTime();
+        let tl = Math.floor((endtime - now) / 1000);
+        if(tl > 0){
+
+          setTimeLeft(tl);
+        }
+
+      }, 1000);
+
+      // Clear interval on component unmount
+      return () => clearInterval(timerId);
+    }
+  }, [endtime]);
+
+  // const timeLeft = useMemo(()=>{
+  //   if(endtime){
+
+  //     return Math.floor((endtime - Date.now()) / 1000);
+  //   }
+  // },[endtime])
+ 
   // unVoteKing({queryKey
 
   const checkVotingCode = useQuery(['checkcode', v_code], database.checkCode, {
@@ -108,7 +136,7 @@ const Home = ({navigation}) => {
     return 0;
   }, [votedking.data]);
 
- const QueenVotedId = useMemo(() => {
+  const QueenVotedId = useMemo(() => {
     if (votedqueen.data) {
       return votedqueen.data.data !== 0 && votedqueen.data.data.selection;
     }
@@ -126,14 +154,14 @@ const Home = ({navigation}) => {
       for (var i = 0; i < sel_k.length; i++) {
         sel_k[i] = {
           ...sel_k[i],
-          ...{vote: sel_k[i].id === KingVotedId ? true : false},
+          ...{ vote: sel_k[i].id === KingVotedId ? true : false },
         };
       }
 
       for (var i = 0; i < sel_q.length; i++) {
         sel_q[i] = {
           ...sel_q[i],
-          ...{vote: sel_q[i].id === QueenVotedId ? true : false},
+          ...{ vote: sel_q[i].id === QueenVotedId ? true : false },
         };
       }
 
@@ -146,7 +174,7 @@ const Home = ({navigation}) => {
           //
         });
 
-      const final = sort.filter(a =>
+      const final = all.filter(a =>
         a.name.toLowerCase().includes(searchText.toLowerCase()),
       );
 
@@ -154,7 +182,7 @@ const Home = ({navigation}) => {
     }
   }, [query.data, QueenVotedId, KingVotedId, searchText]);
   // RemoveCode();
-              // Remove_NameID();
+  // Remove_NameID();
   const openProfile = data => {
     navigation.navigate('profile', {
       data: data,
@@ -167,9 +195,12 @@ const Home = ({navigation}) => {
     votedqueen.refetch();
   };
 
+
+
   return (
-    <ImageBackground source={IMAGE.mainbg} style={{flex: 1}}>
+    <ImageBackground source={IMAGE.mainbg} style={{ flex: 1, position: 'relative' }}>
       <View style={styles.topView}>
+        <Image source={IMAGE.particlegif} style={{ width: '100%', position:'absolute'}} />
         <View
           style={{
             flexDirection: 'row',
@@ -185,11 +216,11 @@ const Home = ({navigation}) => {
             }}>
             <Image
               source={IMAGE.icon_question}
-              style={{width: 30, height: 30}}
+              style={{ width: 30, height: 30 }}
             />
           </TouchableOpacity>
         </View>
-        <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
+        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
           <TouchableOpacity onPress={() => console.log('what')}>
             <Image
               source={IMAGE.ucsd}
@@ -209,25 +240,39 @@ const Home = ({navigation}) => {
             University of Computer Studies, Dawei
           </Text>
           {isTimeUp ? (
-            <Text
-              style={{
-                fontFamily: 'Roboto-Bold',
-                color: 'red',
-              }}>
-              Voting time is over
-            </Text>
+            <>
+              <Text
+                style={{
+                  fontFamily: 'Roboto-Bold',
+                  color: 'red',
+                }}>
+                Voting time is over
+              </Text>
+              <Text
+                style={{
+                  fontFamily: 'Roboto-Regular',
+                  color: 'black',
+                }}>
+                Developed By Thura Lin Htut
+              </Text>
+            </>
           ) : (
-            <Text
-              style={{
-                fontFamily: 'Roboto-Regular',
-                color: 'black',
-              }}>
-              Developed By Thura Lin Htut
-            </Text>
+            <>
+              <Text
+                style={{
+                  fontFamily: 'Roboto-Regular',
+                  color: 'black',
+                }}>
+                Developed By Thura Lin Htut
+              </Text>
+              <Text style={{color:'red'}}>
+                {timeLeft} s
+              </Text>
+            </>
           )}
         </View>
       </View>
-      <View style={{padding: 8, marginTop: 15, flex: 1}}>
+      <View style={{ padding: 8, marginTop: 15, flex: 1 }}>
         <View
           style={{
             flexDirection: 'row',
@@ -246,15 +291,15 @@ const Home = ({navigation}) => {
             placeholderTextColor="#4d4e4f"
             onChangeText={e => setSearchText(e)}
           />
-          <TouchableOpacity style={{marginRight: 10}} onPress={e => Refresh()}>
-            <Image source={IMAGE.icon_search} style={{width: 25, height: 25}} />
+          <TouchableOpacity style={{ marginRight: 10 }} onPress={e => Refresh()}>
+            <Image source={IMAGE.icon_search} style={{ width: 25, height: 25 }} />
           </TouchableOpacity>
         </View>
         {query.isFetching ? (
           <ActivityIndicator />
         ) : (
           <ScrollView
-            style={{marginTop: 10}}
+            style={{ marginTop: 10 }}
             refreshControl={
               <RefreshControl
                 refreshing={

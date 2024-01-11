@@ -107,7 +107,7 @@ const Home = ({navigation}) => {
         return b.vote ? 1 : -1;
       });
 
-      return sort;
+      return all;
     }
   }, [query.data, QueenVotedId]);
 

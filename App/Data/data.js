@@ -35,6 +35,17 @@ export const IMAGE = {
   ic_ig :require('../../assets/ig.png'),
   ic_github :require('../../assets/github.png'),
   ic_linkedin :require('../../assets/linkedin.png'),
+
+  rank1: require('../../assets/rank/1.png'),
+  rank2:  require('../../assets/rank/2.png'),
+  rank3:  require('../../assets/rank/3.png'),
+  rank4:  require('../../assets/rank/4.png'),
+  rank5:  require('../../assets/rank/5.png'),
+
+  telegram: require('../../assets/telegram.png'),
+  particlegif : require('../../assets/particle.gif'),
+
 };
 
 export const URL = 'https://csvote.pythonanywhere.com';
+// export const URL = 'http://192.168.43.181:8000';

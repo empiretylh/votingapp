@@ -2,8 +2,8 @@
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable keyword-spacing */
 /* eslint-disable prettier/prettier */
-import {useCardAnimation} from '@react-navigation/stack';
-import React, {useMemo, useState, useContext} from 'react';
+import { useCardAnimation } from '@react-navigation/stack';
+import React, { useMemo, useState, useContext } from 'react';
 import {
   View,
   Text,
@@ -17,7 +17,7 @@ import {
   Dimensions,
   Linking,
 } from 'react-native';
-import {IMAGE} from '../Data/data';
+import { IMAGE } from '../Data/data';
 
 import PersonItem from './components/personItem';
 import axios from 'axios';
@@ -29,30 +29,31 @@ import {
   EndTimeContext,
   DataContext,
 } from '../context/context';
+import LazyImage from './components/LazyImage';
 const windowWidth = Dimensions.get('window').width;
-const Home = ({navigation, route}) => {
-  const array = Array.from({length: 10}, (_, i) => i + 1);
+const Home = ({ navigation, route }) => {
+  const array = Array.from({ length: 10 }, (_, i) => i + 1);
 
-  const {data} = route.params;
+  const { data } = route.params;
 
   const OpenFacebook = link => {
-    let user =link;
+    let user = link;
     console.log(user);
 
     var urlParts = user.split('=');
 
-    var fbId = urlParts[urlParts.length-1];
+    var fbId = urlParts[urlParts.length - 1];
 
     console.log(fbId)
 
 
 
-    if( parseInt(fbId)){
+    if (parseInt(fbId)) {
       console.log('ID Open')
-     Linking.openURL('fb://profile/'+fbId)
-    }else{
+      Linking.openURL('fb://profile/' + fbId)
+    } else {
       console.log('WEb open')
-      Linking.openURL('fb://facewebmodal/f?href='+fbId);
+      Linking.openURL('fb://facewebmodal/f?href=' + fbId);
     }
   };
 
@@ -60,10 +61,10 @@ const Home = ({navigation, route}) => {
     Linking.openURL('instagram://user?username=' + username);
   };
 
-  const {isTimeUp, setIsTimeUp} = useContext(EndTimeContext);
+  const { isTimeUp, setIsTimeUp } = useContext(EndTimeContext);
 
-  const {v_code, setVCode, RemoveCode} = useContext(CodeContext);
-  const {name_IMEI, setName_IMEI, setName_ID, Remove_NameID} =
+  const { v_code, setVCode, RemoveCode } = useContext(CodeContext);
+  const { name_IMEI, setName_IMEI, setName_ID, Remove_NameID } =
     useContext(NameIMEIContext);
   const {
     showLoading,
@@ -77,7 +78,7 @@ const Home = ({navigation, route}) => {
     UVQ,
   } = useContext(LoadingContext);
 
-  const {votedking, votedqueen} = useContext(DataContext);
+  const { votedking, votedqueen } = useContext(DataContext);
 
   const KingVotedId = useMemo(() => {
     if (votedking.data) {
@@ -156,13 +157,13 @@ const Home = ({navigation, route}) => {
     }
   };
 
-  const renderImage = ({item}) => (
-    <View style={{padding: 10, height: 250}}>
+  const renderImage = ({ item, index, length = data.images.length }) => (
+    <View style={{ padding: 10, height: 290 }}>
       <Image
         source={{
           uri: axios.defaults.baseURL + item.image,
         }}
-        style={{width: windowWidth - 20, height: 250, borderRadius: 25}}
+        style={{ width: windowWidth - 20, height: 290, borderRadius: 25 }}
         resizeMode={'cover'}
       />
       <Text
@@ -173,7 +174,7 @@ const Home = ({navigation, route}) => {
           bottom: 0,
           right: 20,
         }}>
-        Swipe right to see next photo >
+        {parseInt(index) + 1 !== length ? "Swipe right to see next photo >" : null}
       </Text>
     </View>
   );
@@ -181,7 +182,7 @@ const Home = ({navigation, route}) => {
   return (
     <ImageBackground
       source={data.is_male ? IMAGE.boybg : IMAGE.girlbg}
-      style={{flex: 1}}>
+      style={{ flex: 1 }}>
       <View style={styles.topView}>
         <View
           style={{
@@ -193,7 +194,7 @@ const Home = ({navigation, route}) => {
           <Image
             source={
               data && data.profileimage
-                ? {uri: axios.defaults.baseURL + data.profileimage}
+                ? { uri: axios.defaults.baseURL + data.profileimage }
                 : IMAGE.person1
             }
             style={{
@@ -204,7 +205,7 @@ const Home = ({navigation, route}) => {
               borderWidth: 3,
             }}
           />
-          <View style={{marginLeft: 10, flexDirection: 'column'}}>
+          <View style={{ marginLeft: 10, flexDirection: 'column' }}>
             <Text
               style={{
                 fontFamily: 'Roboto-Bold',
@@ -221,19 +222,19 @@ const Home = ({navigation, route}) => {
               }}>
               {data && data.year}
             </Text>
-            <View style={{flexDirection: 'row', marginTop: 5}}>
+            <View style={{ flexDirection: 'row', marginTop: 5 }}>
               <TouchableOpacity onPress={() => OpenFacebook(data.fblink)}>
                 <Image
                   source={IMAGE.fbicon}
-                  style={{width: 28, height: 28, borderRadius: 28}}
+                  style={{ width: 28, height: 28, borderRadius: 28 }}
                 />
               </TouchableOpacity>
               <TouchableOpacity
-                style={{marginLeft: 5}}
+                style={{ marginLeft: 5 }}
                 onPress={() => OpenInstagram(data.iglink)}>
                 <Image
                   source={IMAGE.igicon}
-                  style={{width: 28, height: 28, borderRadius: 28}}
+                  style={{ width: 28, height: 28, borderRadius: 28 }}
                 />
               </TouchableOpacity>
             </View>
@@ -249,6 +250,18 @@ const Home = ({navigation, route}) => {
             }}
           />
         </View>
+        <View>
+
+          <Text style={{ fontSize: 15, color: 'black', backgroundColor: 'white', padding: 5, borderRadius: 10, fontWeight: 'bold', marginTop: 10 }}>
+            Age : {data.age} years old
+          </Text>
+          <Text style={{ fontSize: 15, color: 'black', backgroundColor: 'white', padding: 5, borderRadius: 10, fontWeight: 'bold', marginTop: 5 }}>
+            Address : {data.address}
+          </Text>
+          <Text style={{ fontSize: 15, color: 'black', backgroundColor: 'white', padding: 5, borderRadius: 10, fontWeight: 'bold', marginTop: 5 }}>
+            Hobbies : {data.hobbies}
+          </Text>
+        </View>
       </View>
 
       <FlatList
@@ -257,7 +270,9 @@ const Home = ({navigation, route}) => {
           flexDirection: 'row',
           marginTop: 10,
         }}
-        renderItem={renderImage}
+        renderItem={
+          ({ item, index }) => renderImage({ item, index })
+        }
         keyExtractor={item => item.id}
         showsHorizontalScrollIndicator={false}
         horizontal={true}
@@ -265,7 +280,7 @@ const Home = ({navigation, route}) => {
         bounces={false}
       />
 
-      <View style={{padding: 8, marginTop: 0}}>
+      <View style={{ padding: 8, marginTop: 0 }}>
         {!isTimeUp ? (
           <TouchableOpacity
             style={{
@@ -276,10 +291,10 @@ const Home = ({navigation, route}) => {
                     : '#FF5F5F'
                   : '#FF5F5F'
                 : QueenVotedId
-                ? QueenVotedId === data.id
-                  ? 'red'
-                  : '#FF5F5F'
-                : '#FF5F5F',
+                  ? QueenVotedId === data.id
+                    ? 'red'
+                    : '#FF5F5F'
+                  : '#FF5F5F',
               padding: 10,
               borderRadius: 15,
               alignItems: 'center',
@@ -319,7 +334,7 @@ const Home = ({navigation, route}) => {
               }}
             />
             <Text
-              style={{color: 'white', fontFamily: 'Roboto-Bold', fontSize: 30}}>
+              style={{ color: 'white', fontFamily: 'Roboto-Bold', fontSize: 30 }}>
               {data.is_male
                 ? KingVotedId
                   ? KingVotedId === data.id
@@ -327,10 +342,10 @@ const Home = ({navigation, route}) => {
                     : 'Vote'
                   : 'Vote'
                 : QueenVotedId
-                ? QueenVotedId === data.id
-                  ? 'Cancel Vote'
-                  : 'Vote'
-                : 'Vote'}
+                  ? QueenVotedId === data.id
+                    ? 'Cancel Vote'
+                    : 'Vote'
+                  : 'Vote'}
             </Text>
           </TouchableOpacity>
         ) : null}
@@ -347,10 +362,10 @@ const Home = ({navigation, route}) => {
           onPress={() => navigation.goBack()}>
           <Image
             source={IMAGE.backicon}
-            style={{width: 30, height: 30, marginRight: 8, tintColor: '#ffff'}}
+            style={{ width: 30, height: 30, marginRight: 8, tintColor: '#ffff' }}
           />
           <Text
-            style={{color: 'white', fontFamily: 'Roboto-Bold', fontSize: 30}}>
+            style={{ color: 'white', fontFamily: 'Roboto-Bold', fontSize: 30 }}>
             Back
           </Text>
         </TouchableOpacity>
@@ -376,7 +391,7 @@ const Home = ({navigation, route}) => {
 
               elevation: 5,
             }}>
-            <Text style={{fontSize: 15, color: 'black'}}>
+            <Text style={{ fontSize: 15, color: 'black' }}>
               If you want to vote for {data.name}, the first person you voted
               for will automatically no longer vote.
             </Text>
@@ -413,7 +428,7 @@ const Home = ({navigation, route}) => {
 const styles = StyleSheet.create({
   topView: {
     backgroundColor: '#8AD4D2',
-    height: 200,
+    height: 280,
     borderBottomRightRadius: 15,
     borderBottomLeftRadius: 15,
     shadowColor: '#52006A',

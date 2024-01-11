@@ -73,7 +73,7 @@ const King = ({navigation}) => {
         return a.vote ? -1 : 1;
       });
 
-      return sort;
+      return all;
     }
   }, [query.data, KingVotedId]);
 
