@@ -74,7 +74,7 @@ const Home = ({navigation}) => {
               color: 'black',
               fontSize: 17,
             }}>
-            University of Computer Studies, Dawei
+            University Voting System
           </Text>
           <Text
             style={{
@@ -82,7 +82,7 @@ const Home = ({navigation}) => {
               color: 'black',
               fontSize: 15,
             }}>
-            Developed By Thura Lin Htut
+            Developed By EMPIRE
           </Text>
           <View
             style={{

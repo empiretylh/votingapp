@@ -450,7 +450,7 @@ const MainContainer = () => {
                     </View>
                   </View>
                 )}
-                {showSponsor && (
+                {/* {showSponsor && (
                   <View
                     style={{
                       position: 'absolute',
@@ -641,7 +641,7 @@ const MainContainer = () => {
                   </View>
                 )}
                
-
+ */}
 
                 {menu && (
                   <View

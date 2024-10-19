@@ -207,7 +207,7 @@ const Home = ({ navigation }) => {
             justifyContent: 'space-between',
             alignItems: 'center',
           }}>
-          <Text style={styles.logotext}>UCSD VOTING</Text>
+          <Text style={styles.logotext}>VOTING</Text>
           <TouchableOpacity
             onPress={() => {
               // RemoveCode();
@@ -237,7 +237,7 @@ const Home = ({ navigation }) => {
               color: 'black',
               fontSize: 16,
             }}>
-            University of Computer Studies, Dawei
+            University Voting System
           </Text>
           {isTimeUp ? (
             <>
