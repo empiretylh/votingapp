@@ -64,7 +64,7 @@ const Home = ({navigation}) => {
         }}>
         <View style={{padding: 18, alignItems: 'center', flex: 1}}>
           <Image
-            source={I.ucsd}
+            source={I.king_crown}
             style={{width: '100%', height: 250}}
             resizeMode="contain"
           />
@@ -74,7 +74,7 @@ const Home = ({navigation}) => {
               color: 'black',
               fontSize: 17,
             }}>
-            University Voting System
+            Youth Choice Voting System
           </Text>
           <Text
             style={{

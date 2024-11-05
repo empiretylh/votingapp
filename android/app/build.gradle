@@ -219,10 +219,10 @@ android {
         }
 
         release {
-            storeFile file('ucsdvoting.keystore')
-            storePassword 'ucsdvoting'
-            keyAlias 'ucsdvoting'
-            keyPassword 'ucsdvoting'
+            storeFile file('synapsework.keystore')
+            storePassword 'synapsework'
+            keyAlias 'synapsework'
+            keyPassword 'synapsework'
         }
     }
     buildTypes {

@@ -223,7 +223,7 @@ const Home = ({ navigation }) => {
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
           <TouchableOpacity onPress={() => console.log('what')}>
             <Image
-              source={IMAGE.ucsd}
+              source={IMAGE.king_crown}
               style={{
                 width: 110,
                 height: 110,
@@ -237,7 +237,7 @@ const Home = ({ navigation }) => {
               color: 'black',
               fontSize: 16,
             }}>
-            University Voting System
+            Youth Choice Voting System
           </Text>
           {isTimeUp ? (
             <>
@@ -253,7 +253,7 @@ const Home = ({ navigation }) => {
                   fontFamily: 'Roboto-Regular',
                   color: 'black',
                 }}>
-                Developed By Thura Lin Htut
+                Developed By EMPIRE
               </Text>
             </>
           ) : (
