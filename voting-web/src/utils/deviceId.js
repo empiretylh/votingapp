@@ -21,7 +21,10 @@ export const getDeviceId = async () => {
     // Fallback to a simple ID if fingerprinting fails
     let deviceId = localStorage.getItem('fallback_device_id');
     if (!deviceId) {
-      deviceId = 'web-' + Math.random().toString(36).substring(2, 15);
+      // Use crypto.getRandomValues for better security
+      const array = new Uint8Array(16);
+      crypto.getRandomValues(array);
+      deviceId = 'web-' + Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
       localStorage.setItem('fallback_device_id', deviceId);
     }
     return deviceId;
